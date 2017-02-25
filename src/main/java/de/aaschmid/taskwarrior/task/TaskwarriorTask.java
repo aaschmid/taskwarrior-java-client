@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+// codebeat:disable[TOO_MANY_FUNCTIONS,TOO_MANY_IVARS]
 public class TaskwarriorTask {
 
     private static final String PATTERN_ZONED_DATE_TIME = "yyyyMMdd'T'HHmmssX";
@@ -288,6 +289,7 @@ public class TaskwarriorTask {
         this.annotations = annotations;
     }
 
+    // codebeat:disable[ABC]
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -314,7 +316,9 @@ public class TaskwarriorTask {
         result = prime * result + ((wait == null) ? 0 : wait.hashCode());
         return result;
     }
+    // codebeat:enable[ABC]
 
+    // codebeat:disable[ABC,CYCLO,LOC]
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -457,6 +461,7 @@ public class TaskwarriorTask {
         }
         return true;
     }
+    // codebeat:enable[ABC,CYCLO,LOC]
 
     @Override
     public String toString() {
@@ -467,3 +472,4 @@ public class TaskwarriorTask {
                 + annotations + "]";
     }
 }
+// codebeat:enable[TOO_MANY_FUNCTIONS,TOO_MANY_IVARS]
