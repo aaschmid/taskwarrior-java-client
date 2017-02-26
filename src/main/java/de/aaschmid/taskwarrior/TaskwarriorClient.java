@@ -11,11 +11,9 @@ import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.net.ssl.SSLContext;
 
@@ -77,17 +75,16 @@ public class TaskwarriorClient {
     }
 
     private byte[] createByteArraysFor(TaskwarriorMessage message) {
-        // @formatter:off
-        String messageData = Stream.concat(
-                Stream.of(
-                        createHeadersFor(config.getAuthentication()),
-                        message.getHeaders()
-                    ).map(Map::entrySet).flatMap(Set::stream).map(e -> e.getKey() + SEPARATOR_HEADER_NAME_VALUE + e.getValue()),
-                Stream.of("", message.getPayload().orElse(""))
-            ).collect(Collectors.joining("\n"));
-        // @formatter:on
+        Map<String, String> headers = createHeadersFor(config.getAuthentication());
+        headers.putAll(message.getHeaders());
 
-        byte[] bytes = messageData.getBytes(CHARSET_TRANSFER_MESSAGE);
+        StringBuilder messageData = new StringBuilder();
+        for (Entry<String, String> e : headers.entrySet()) {
+            messageData.append(e.getKey() + SEPARATOR_HEADER_NAME_VALUE + e.getValue()).append("\n");
+        }
+        messageData.append("\n").append(message.getPayload());
+
+        byte[] bytes = messageData.toString().getBytes(CHARSET_TRANSFER_MESSAGE);
         return addFourByteBigEndianBinaryByteCountMessageLengthPrefix(bytes);
     }
 
@@ -128,7 +125,7 @@ public class TaskwarriorClient {
 
         Map<String, String> headers = parseHeaders(header);
         if (payload.isEmpty() || "\n".equals(payload)) {
-            return new TaskwarriorMessage(headers);
+            payload = "";
         }
         return new TaskwarriorMessage(headers, payload);
     }

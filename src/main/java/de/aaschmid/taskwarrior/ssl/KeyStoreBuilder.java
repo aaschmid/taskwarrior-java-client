@@ -88,13 +88,13 @@ public class KeyStoreBuilder {
         }
 
         AtomicInteger idx = new AtomicInteger(0);
-        createCertificatesFor(caCertFile).forEach(c -> {
+        for (Certificate cert : createCertificatesFor(caCertFile)) {
             try {
-                result.setCertificateEntry("ca_" + idx.getAndIncrement(), c);
+                result.setCertificateEntry("ca_" + idx.getAndIncrement(), cert);
             } catch (KeyStoreException e) {
                 throw new TaskwarriorKeyStoreException(e, "Could not add CA certificate '%s' to keystore: %s", caCertFile, e.getMessage());
             }
-        });
+        }
 
         Certificate[] privateKeyCertsChain = createCertificatesFor(privateKeyCertFile).toArray(new Certificate[0]);
         PrivateKey privateKey = createPrivateKeyFor(privateKeyFile);

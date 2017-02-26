@@ -10,7 +10,7 @@ description = 'A Java client to communicate with a taskwarrior server (= taskd).
 group = 'de.aaschmid'
 version = '1.0-SNAPSHOT'
 
-sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_7
 
 repositories {
     mavenCentral()

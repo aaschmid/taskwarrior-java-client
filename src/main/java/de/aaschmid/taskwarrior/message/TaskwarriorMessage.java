@@ -5,8 +5,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 public class TaskwarriorMessage {
 
@@ -15,26 +13,22 @@ public class TaskwarriorMessage {
     public static final String HEADER_CLIENT = "client";
 
     private final Map<String, String> headers;
-    private final Optional<String> payload;
-
-    public TaskwarriorMessage(Map<String, String> headers, Optional<String> payload) {
-        this.headers = new HashMap<>(Objects.requireNonNull(headers, "'headers' must not be null."));
-        this.payload = payload;
-    }
+    private final String payload;
 
     public TaskwarriorMessage(Map<String, String> headers, String payload) {
-        this(headers, Optional.of(requireNonNull(payload, "'payload' must not be null.")));
+        this.headers = new HashMap<>(requireNonNull(headers, "'headers' must not be null."));
+        this.payload = requireNonNull(payload, "'payload' must not be null");
     }
 
     public TaskwarriorMessage(Map<String, String> headers) {
-        this(headers, Optional.empty());
+        this(headers, "");
     }
 
     public Map<String, String> getHeaders() {
         return unmodifiableMap(headers);
     }
 
-    public Optional<String> getPayload() {
+    public String getPayload() {
         return payload;
     }
 
