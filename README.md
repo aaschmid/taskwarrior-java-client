@@ -38,6 +38,7 @@ Requirements
 -----------
 
 * JDK 8
+* [Jackson](https://github.com/FasterXML/jackson) via Gradle to (un-)marshal JSON
 
 
 Download
@@ -84,6 +85,35 @@ public class Taskwarrior {
         headers.put(HEADER_CLIENT, "taskwarrior-java-client " + ManifestHelper.getImplementationVersionFromManifest("local-dev"));
 
         TaskwarriorMessage response = client.sendAndReceive(new TaskwarriorMessage(headers));
+        System.out.println(response);
+    }
+}
+```
+
+or
+
+```java
+import java.net.URL;
+
+import de.aaschmid.taskwarrior.config.*;
+import de.aaschmid.taskwarrior.message.*;
+import de.aaschmid.taskwarrior.message.TaskwarriorRequest.*;
+
+public class Taskwarrior {
+
+    private static final URL PROPERTIES_TASKWARRIOR = Taskwarrior.class.getResource("/taskwarrior.properties");
+
+    public static void main(String[] args) throws Exception {
+        if (PROPERTIES_TASKWARRIOR == null) {
+            throw new IllegalStateException(
+                    "No 'taskwarrior.properties' found on Classpath. Create it by copy and rename 'taskwarrior.properties.template'. Also fill in proper values.");
+        }
+        TaskwarriorConfiguration config = new TaskwarriorPropertiesConfiguration(PROPERTIES_TASKWARRIOR);
+
+        TaskwarriorClient client = new TaskwarriorClient(config);
+
+        TaskwarriorMessage request = TaskwarriorMessageFactory.messageFor(new TaskwarriorRequest(Type.STATISTICS, Protocol.V1));
+        TaskwarriorResponse response = TaskwarriorMessageFactory.responseFor(client.sendAndReceive(request));
         System.out.println(response);
     }
 }

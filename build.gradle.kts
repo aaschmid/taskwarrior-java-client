@@ -38,6 +38,9 @@ repositories {
 }
 
 dependencies {
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.2")
+
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
     testImplementation("org.assertj:assertj-core:3.14.0")
     testImplementation("org.mockito:mockito-junit-jupiter:3.2.4")
