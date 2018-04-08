@@ -23,7 +23,7 @@ dependencies {
 
 jar {
     manifest {
-        def title = 'Taskwarrior Java Client'
+        def title = 'Taskwarrior Java client'
         def vendor = 'Andreas Schmid'
         def copyright = "${new Date()[Calendar.YEAR]} ${vendor}"
 
