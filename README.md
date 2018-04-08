@@ -26,7 +26,7 @@ A Java client to communicate with a [taskwarrior][] server (= [taskd](https://ta
 Motivation and distinction
 --------------------------
 
-The current taskwarrior Android app does not satisfy may requirements. Therefore I created this client library to integrate it into my prefered task app.
+The current taskwarrior Android app does not satisfy my requirements. Therefore I created this client library to integrate it into my prefered task app.
 And I also want to share it with everybody who will love to use it.
 
 
