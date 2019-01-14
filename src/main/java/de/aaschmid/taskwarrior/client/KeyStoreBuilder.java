@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.KeyStore;
@@ -30,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import org.bouncycastle.asn1.pkcs.RSAPrivateKey;
+import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
 import org.bouncycastle.crypto.util.PrivateKeyFactory;
 import org.bouncycastle.crypto.util.PrivateKeyInfoFactory;
@@ -136,21 +138,20 @@ class KeyStoreBuilder {
         try {
             byte[] bytes = Files.readAllBytes(privateKeyFile.toPath());
             if (privateKeyFile.getName().endsWith("pem")) {
-                String privateKeyString = "----...";
-
-                PemObject privateKeyObject = null;
+                PemObject privateKeyObject;
                 try {
-                    PemReader pemReader;
-                    pemReader = new PemReader(new InputStreamReader(new ByteArrayInputStream(bytes)));
-
+                    PemReader pemReader = new PemReader(new InputStreamReader(new ByteArrayInputStream(bytes), StandardCharsets.UTF_8));
                     privateKeyObject = pemReader.readPemObject();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    throw new TaskwarriorKeyStoreException(
+                            e,
+                            "Could not read private key '%s' as PEM object: %s",
+                            privateKeyFile,
+                            e.getMessage());
                 }
 
-                RSAPrivateCrtKeyParameters privateKeyParameter = null;
-                if (privateKeyObject.getType().endsWith("RSA PRIVATE KEY")) {
-                    //PKCS#1 key
+                AsymmetricKeyParameter privateKeyParameter;
+                if (privateKeyObject.getType().endsWith("RSA PRIVATE KEY")) { //PKCS#1 key
                     RSAPrivateKey rsa = RSAPrivateKey.getInstance(privateKeyObject.getContent());
                     privateKeyParameter = new RSAPrivateCrtKeyParameters(
                             rsa.getModulus(),
@@ -162,28 +163,24 @@ class KeyStoreBuilder {
                             rsa.getExponent2(),
                             rsa.getCoefficient()
                     );
-                } else if (privateKeyObject.getType().endsWith("PRIVATE KEY")) {
-                    //PKCS#8 key
+                } else if (privateKeyObject.getType().endsWith("PRIVATE KEY")) { //PKCS#8 key
                     try {
-                        privateKeyParameter = (RSAPrivateCrtKeyParameters) PrivateKeyFactory.createKey(
-                                privateKeyObject.getContent()
-                        );
+                        privateKeyParameter = PrivateKeyFactory.createKey(privateKeyObject.getContent());
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        throw new TaskwarriorKeyStoreException(e, "Cannot decode private key '%s': %s", privateKeyFile, e.getMessage());
                     }
                 } else {
                     throw new TaskwarriorKeyStoreException("Could not detect key algorithm for '%s'.", privateKeyFile);
                 }
 
                 try {
-                    return new JcaPEMKeyConverter()
-                            .getPrivateKey(
-                                    PrivateKeyInfoFactory.createPrivateKeyInfo(
-                                            privateKeyParameter
-                                    )
-                            );
+                    return new JcaPEMKeyConverter().getPrivateKey(PrivateKeyInfoFactory.createPrivateKeyInfo(privateKeyParameter));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new TaskwarriorKeyStoreException(
+                            e,
+                            "Cannot encode private key info from '%s': %s",
+                            privateKeyFile,
+                            e.getMessage());
                 }
             }
             return createPrivateKeyFromPkcs8Der(bytes);
@@ -212,7 +209,9 @@ class KeyStoreBuilder {
             RSAPrivateCrtKeySpec keySpec = new RSAPrivateCrtKeySpec(modulus, publicExp, privateExp, prime1, prime2, exp1, exp2, crtCoef);
             return createPrivateKey(privateKeyFile, keySpec);
         } catch (Error | Exception e) {
-            throw new TaskwarriorKeyStoreException("Could not use required but proprietary 'sun.security.util' package on this platform.", e);
+            throw new TaskwarriorKeyStoreException(
+                    "Could not use required but proprietary 'sun.security.util' package on this platform.",
+                    e);
         }
     }
 

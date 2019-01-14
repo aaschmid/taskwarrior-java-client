@@ -45,8 +45,7 @@ dependencies {
         testCompileOnly(it)
     }
 
-    // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on
-    implementation("org.bouncycastle:bcprov-jdk15on:1.60")
+    implementation("org.bouncycastle:bcpkix-jdk15on:1.64")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
     testImplementation("org.assertj:assertj-core:3.14.0")
