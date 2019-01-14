@@ -20,15 +20,6 @@ task wrapper(type: Wrapper) {
     gradleVersion = '4.6'
 }
 
-dependencies {
-    // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on
-    implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.60'
-
-    // https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on
-    implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.60'
-}
-
-
 jar {
     manifest {
         def title = 'Taskwarrior Java client'
