@@ -16,10 +16,6 @@ repositories {
     mavenCentral()
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.6'
-}
-
 jar {
     manifest {
         def title = 'Taskwarrior Java client'
@@ -71,4 +67,8 @@ artifacts {
     archives jar
     archives javadocJar
     archives sourcesJar
+}
+
+dependencies {
+    testImplementation('org.junit.jupiter:junit-jupiter:5.5.1')
 }
