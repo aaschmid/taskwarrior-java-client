@@ -14,3 +14,4 @@ taskwarrior.properties
 
 # Intellij Idea
 .idea/
+*.iml
