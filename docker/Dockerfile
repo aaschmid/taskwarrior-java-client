@@ -13,7 +13,7 @@ ENV TASKDGROUP=taskd
 
 # Taskwarrior user vars
 ENV TASKORG=Public
-ENV TASKUSERID=111-222-333
+ENV TASKUSERID=921c0dd2-728e-4a44-8605-68262754dd99
 
 EXPOSE 53589
 
@@ -46,6 +46,8 @@ COPY user/taskrc /root/.taskrc
 CMD taskd server \
   --user $TASKDUSER:$TASKDGROUP \
   --data $TASKDDATA \
+  --debug \
+  --debug.tls=2 \
   --daemon \
   && tail -f $TASKDLOG
 

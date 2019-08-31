@@ -2,6 +2,8 @@ package de.aaschmid.taskwarrior;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.*;
+
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,12 +11,14 @@ import java.util.Map;
 import de.aaschmid.taskwarrior.config.*;
 import de.aaschmid.taskwarrior.internal.ManifestHelper;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
+import org.junit.jupiter.api.Test;
 
 class TaskwarriorClientTest {
 
     private static final URL PROPERTIES_TASKWARRIOR = TaskwarriorClientTest.class.getResource("/taskwarrior.properties");
 
-    public static void main(String[] args) throws Exception {
+    @Test
+    void statistics() throws IOException {
         if (PROPERTIES_TASKWARRIOR == null) {
             throw new IllegalStateException(
                     "No 'taskwarrior.properties' found on Classpath. Create it by copy and rename 'taskwarrior.properties.template'. Also fill in proper values.");
@@ -29,6 +33,6 @@ class TaskwarriorClientTest {
         headers.put(HEADER_CLIENT, "taskwarrior-java-client " + ManifestHelper.getImplementationVersionFromManifest("local-dev"));
 
         TaskwarriorMessage response = client.sendAndReceive(new TaskwarriorMessage(headers));
-        System.out.println(response);
+        assert(response.getHeaders().get("code").equals("200"));
     }
 }
