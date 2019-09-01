@@ -18,7 +18,8 @@ taskwarrior-java-client
 What is it
 ----------
 
-A Java client to communicate with a [taskwarrior][] server (= [taskd](https://taskwarrior.org/docs/taskserver/why.html)).
+A Java client to communicate with a [taskwarrior][] server (=
+[taskd](https://taskwarrior.org/docs/taskserver/why.html)).
 
 [taskwarrior]: https://taskwarrior.org/
 
@@ -26,8 +27,9 @@ A Java client to communicate with a [taskwarrior][] server (= [taskd](https://ta
 Motivation and distinction
 --------------------------
 
-The current taskwarrior Android app does not satisfy my requirements. Therefore I created this client library to integrate it into my prefered task app.
-And I also want to share it with everybody who will love to use it.
+The current taskwarrior Android app does not satisfy my requirements. Therefore
+I created this client library to integrate it into my prefered task app.  And I
+also want to share it with everybody who will love to use it.
 
 
 Requirements
@@ -39,8 +41,9 @@ Requirements
 Download
 --------
 
-Currently there is no released version available but feel free to clone / fork and build it yourself. If you would love to see this on
-[Maven Central](http://search.maven.org/) feel free to create an issue.
+Currently there is no released version available but feel free to clone / fork
+and build it yourself. If you would love to see this on [Maven
+Central](http://search.maven.org/) feel free to create an issue.
 
 
 Usage example
@@ -86,6 +89,14 @@ public class Taskwarrior {
 
 Used `taskwarrior.properties` can be created by copying and adjusting
 [`src/main/resources/taskwarrior.properties.template`](https://github.com/aaschmid/taskwarrior-java-client/tree/master/src/main/resources/taskwarrior.properties.template).
+
+
+
+Testing
+-------
+
+To run tests manually you will need to build and run taskwarrior server container.
+[See here how](docker/README.md)
 
 
 Release notes

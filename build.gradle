@@ -1,6 +1,5 @@
 plugins {
     id 'de.aaschmid.cpd' version '1.0'
-    id 'eclipse'
     id 'java'
     id 'findbugs'
 }
@@ -15,10 +14,6 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 repositories {
     mavenCentral()
 }
-
-//task wrapper(type: Wrapper) {
-//    gradleVersion = '5.6.1'
-//}
 
 jar {
     manifest {
@@ -48,12 +43,10 @@ test {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
     from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
     from sourceSets.main.allSource
 }
 
@@ -78,6 +71,8 @@ artifacts {
 }
 
 dependencies {
-    testImplementation('org.junit.jupiter:junit-jupiter:5.5.1')
-    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.5.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
 }

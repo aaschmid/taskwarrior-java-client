@@ -4,16 +4,15 @@ MAINTAINER Ihor Antonov <ihor@antonovs.family>
 # Configuration steps closely follow official taskd manual:
 # https://taskwarrior.org/docs/taskserver/configure.html
 
-# Taskwarrior server vars
-ENV TASKDDATA=/var/lib/taskd
-ENV TASKDLISTEN=localhost:53589
-ENV TASKDLOG=/var/log/taskd.log
-ENV TASKDUSER=taskd
-ENV TASKDGROUP=taskd
-
-# Taskwarrior user vars
-ENV TASKORG=Public
-ENV TASKUSERID=921c0dd2-728e-4a44-8605-68262754dd99
+# Taskwarrior server vars (TASKD..)
+# Taskwarrior user vars (TASK..)
+ENV TASKDDATA=/var/lib/taskd \
+  TASKDLISTEN=localhost:53589 \
+  TASKDLOG=/var/log/taskd.log \
+  TASKDUSER=taskd \
+  TASKDGROUP=taskd \
+  TASKORG=Public \
+  TASKUSERID=921c0dd2-728e-4a44-8605-68262754dd99
 
 EXPOSE 53589
 

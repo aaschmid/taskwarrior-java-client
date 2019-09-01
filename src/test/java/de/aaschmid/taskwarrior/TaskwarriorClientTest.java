@@ -11,28 +11,62 @@ import java.util.Map;
 import de.aaschmid.taskwarrior.config.*;
 import de.aaschmid.taskwarrior.internal.ManifestHelper;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class TaskwarriorClientTest {
 
     private static final URL PROPERTIES_TASKWARRIOR = TaskwarriorClientTest.class.getResource("/taskwarrior.properties");
+    private static String IMPL_VERSION = ManifestHelper.getImplementationVersionFromManifest("local-dev");
+    private static TaskwarriorConfiguration CONFIG = null;
+
+    @BeforeAll
+    static void initConfig() {
+        if (PROPERTIES_TASKWARRIOR == null) {
+            throw new IllegalStateException(
+                    "No 'taskwarrior.properties' found on Classpath. "
+                            + "Create it by copy and rename 'taskwarrior.properties.template'. "
+                            + "Also fill in proper values.");
+        }
+        CONFIG = new TaskwarriorPropertiesConfiguration(PROPERTIES_TASKWARRIOR);
+    }
+
+    @Test
+    void configParsed() {
+        assertNotNull(CONFIG);
+        assertEquals("localhost", CONFIG.getServerHost().getCanonicalHostName());
+        assertEquals(53589, CONFIG.getServerPort());
+    }
 
     @Test
     void statistics() throws IOException {
-        if (PROPERTIES_TASKWARRIOR == null) {
-            throw new IllegalStateException(
-                    "No 'taskwarrior.properties' found on Classpath. Create it by copy and rename 'taskwarrior.properties.template'. Also fill in proper values.");
-        }
-        TaskwarriorConfiguration config = new TaskwarriorPropertiesConfiguration(PROPERTIES_TASKWARRIOR);
 
-        TaskwarriorClient client = new TaskwarriorClient(config);
+        TaskwarriorClient client = new TaskwarriorClient(CONFIG);
 
         Map<String, String> headers = new HashMap<>();
         headers.put(HEADER_TYPE, "statistics");
         headers.put(HEADER_PROTOCOL, "v1");
-        headers.put(HEADER_CLIENT, "taskwarrior-java-client " + ManifestHelper.getImplementationVersionFromManifest("local-dev"));
+        headers.put(HEADER_CLIENT, "taskwarrior-java-client " + IMPL_VERSION);
 
         TaskwarriorMessage response = client.sendAndReceive(new TaskwarriorMessage(headers));
-        assert(response.getHeaders().get("code").equals("200"));
+        assertEquals("200", response.getHeaders().get("code"));
     }
+
+
+    @Test
+    void sync() throws IOException {
+
+        TaskwarriorClient client = new TaskwarriorClient(CONFIG);
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put(HEADER_TYPE, "sync");
+        headers.put(HEADER_PROTOCOL, "v1");
+        headers.put(HEADER_CLIENT, "taskwarrior-java-client " + IMPL_VERSION);
+
+        TaskwarriorMessage response = client.sendAndReceive(new TaskwarriorMessage(headers));
+        assertEquals("200", response.getHeaders().get("code"));
+    }
+
+
 }
