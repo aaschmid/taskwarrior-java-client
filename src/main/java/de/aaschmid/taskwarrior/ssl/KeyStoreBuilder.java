@@ -34,8 +34,6 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 
-
-
 public class KeyStoreBuilder {
 
     public static final String KEYSTORE_PASSWORD = UUID.randomUUID().toString();
