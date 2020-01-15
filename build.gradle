@@ -1,7 +1,7 @@
 plugins {
-    id 'de.aaschmid.cpd' version '3.0'
+    id 'de.aaschmid.cpd' version '3.1'
     id 'java'
-    id 'findbugs'
+    id 'com.github.spotbugs' version '3.0.0'
 }
 
 archivesBaseName = 'taskwarrior-java-client'
@@ -94,8 +94,8 @@ cpd {
     toolVersion = '6.10.0'
 }
 
-findbugs {
-    toolVersion = '3.0.1'
+spotbugs {
+    toolVersion = '3.1.12'
     ignoreFailures = true
 }
 
