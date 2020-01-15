@@ -9,6 +9,11 @@ plugins {
     id("de.aaschmid.cpd") version "3.1"
 }
 
+buildScan {
+    termsOfServiceUrl = "https://gradle.com/terms-of-service"
+    termsOfServiceAgree = "yes"
+}
+
 base {
     archivesBaseName = "taskwarrior-java-client"
     description = "A Java client to communicate with a taskwarrior server (= taskd)."
