@@ -106,6 +106,13 @@ tasks {
     }
     check { dependsOn(integTest) }
 
+    jacocoTestReport {
+        reports {
+            xml.isEnabled = true
+            html.isEnabled = false
+        }
+    }
+
     cpdCheck {
         minimumTokenCount = 25
     }
