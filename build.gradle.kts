@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter:5.5.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
     testImplementation("org.assertj:assertj-core:3.14.0")
     testImplementation("org.mockito:mockito-junit-jupiter:3.2.4")
 }
@@ -73,6 +73,10 @@ tasks {
                     "License" to "Apache License v2.0, January 2004"
             )
         }
+    }
+
+    test {
+        useJUnitPlatform()
     }
 
     test {
