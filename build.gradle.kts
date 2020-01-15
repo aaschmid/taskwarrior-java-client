@@ -3,6 +3,7 @@ import java.time.format.DateTimeFormatter
 
 plugins {
     `java-library`
+    jacoco
 
     id("com.github.spotbugs") version "3.0.0"
     id("de.aaschmid.cpd") version "3.1"
@@ -100,6 +101,10 @@ tasks {
     cpdCheck {
         minimumTokenCount = 25
     }
+}
+
+jacoco {
+    toolVersion = "0.8.5"
 }
 
 cpd {
