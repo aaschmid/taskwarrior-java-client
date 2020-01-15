@@ -1,68 +1,71 @@
 plugins {
-    id 'de.aaschmid.cpd' version '3.1'
-    id 'java-library'
-    id 'com.github.spotbugs' version '3.0.0'
+    id("de.aaschmid.cpd") version "3.1"
+    id("java-library")
+    id("com.github.spotbugs") version "3.0.0"
 }
 
-archivesBaseName = 'taskwarrior-java-client'
-description = 'A Java client to communicate with a taskwarrior server (= taskd).'
-group = 'de.aaschmid'
+archivesBaseName = "taskwarrior-java-client"
+description = "A Java client to communicate with a taskwarrior server (= taskd)."
+group = "de.aaschmid"
 version = '1.1-SNAPSHOT'
 
-sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.1'
-    testImplementation "org.assertj:assertj-core:3.13.2"
-    testImplementation "org.mockito:mockito-junit-jupiter:3.1.0"
+    testImplementation("org.junit.jupiter:junit-jupiter:5.5.1")
+    testImplementation("org.assertj:assertj-core:3.13.2")
+    testImplementation("org.mockito:mockito-junit-jupiter:3.1.0")
 }
 
 tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-    options.compilerArgs += [ '-Xlint:all', '-Werror' ]
+    options.encoding = "UTF-8"
+    options.compilerArgs += [ "-Xlint:all", "-Werror" ]
 }
 
 tasks.withType(Jar) {
     from(project.rootDir) {
         include 'LICENSE', 'NOTICE'
-        into 'META-INF'
+        into("META-INF")
     }
 }
 
 jar {
     manifest {
         def title = 'Taskwarrior Java client'
-        def vendor = 'Andreas Schmid'
-        def today = new Date().format('yyyy-MM-dd')
+        def vendor = "Andreas Schmid"
+        def today = new Date().format("yyyy-MM-dd")
         def copyright = "${new Date()[Calendar.YEAR]} ${vendor}"
 
         attributes (
-            'Built-By': "Gradle ${gradle.gradleVersion}",
-            'Built-Date': today,
-            'Specification-Title': title,
-            'Specification-Version': archiveVersion,
-            'Specification-Vendor': vendor,
-            'Implementation-Title': title,
-            'Implementation-Version': archiveVersion,
-            'Implementation-Vendor': vendor,
-            'Automatic-Module-Name': 'de.aaschmid.taskwarrior.client',
-            'Issue-Tracker': 'https://github.com/aaschmid/taskwarrior-java-client/issues',
-            'Documentation-URL': 'https://github.com/aaschmid/taskwarrior-java-client',
-            'Copyright': copyright,
-            'License': 'Apache License v2.0, January 2004'
+            "Built-By": "Gradle ${gradle.gradleVersion}",
+            "Built-Date": today,
+            "Specification-Title": title,
+            "Specification-Version": archiveVersion,
+            "Specification-Vendor": vendor,
+            "Implementation-Title": title,
+            "Implementation-Version": archiveVersion,
+            "Implementation-Vendor": vendor,
+            "Automatic-Module-Name": "de.aaschmid.taskwarrior.client",
+            "Issue-Tracker": "https://github.com/aaschmid/taskwarrior-java-client/issues",
+            "Documentation-URL": "https://github.com/aaschmid/taskwarrior-java-client",
+            "Copyright": copyright,
+            "License": "Apache License v2.0, January 2004"
         )
     }
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = "javadoc"
     from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar) {
+    classifier = "sources"
     from sourceSets.main.allSource
 }
 
@@ -91,11 +94,11 @@ task integTest(type: Test) {
 check.dependsOn integTest
 
 cpd {
-    toolVersion = '6.10.0'
+    toolVersion = "6.10.0"
 }
 
 spotbugs {
-    toolVersion = '3.1.12'
+    toolVersion = "3.1.12"
     ignoreFailures = true
 }
 
