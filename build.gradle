@@ -1,6 +1,6 @@
 plugins {
     id 'de.aaschmid.cpd' version '3.1'
-    id 'java'
+    id 'java-library'
     id 'com.github.spotbugs' version '3.0.0'
 }
 
@@ -44,10 +44,10 @@ jar {
             'Built-By': "Gradle ${gradle.gradleVersion}",
             'Built-Date': today,
             'Specification-Title': title,
-            'Specification-Version': version,
+            'Specification-Version': archiveVersion,
             'Specification-Vendor': vendor,
             'Implementation-Title': title,
-            'Implementation-Version': version,
+            'Implementation-Version': archiveVersion,
             'Implementation-Vendor': vendor,
             'Automatic-Module-Name': 'de.aaschmid.taskwarrior.client',
             'Issue-Tracker': 'https://github.com/aaschmid/taskwarrior-java-client/issues',
