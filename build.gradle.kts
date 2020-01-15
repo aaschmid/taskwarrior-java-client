@@ -1,3 +1,4 @@
+import com.github.spotbugs.SpotBugsTask
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -115,6 +116,13 @@ tasks {
 
     cpdCheck {
         minimumTokenCount = 25
+    }
+
+    withType<SpotBugsTask> {
+        reports {
+            html.isEnabled = true
+            xml.isEnabled = false
+        }
     }
 }
 
