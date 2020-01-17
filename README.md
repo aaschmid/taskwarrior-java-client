@@ -102,4 +102,4 @@ To run tests manually you will need to build and run taskwarrior server containe
 Release notes
 -------------
 
-Currently there are no releases available, see [Release Notes](/aaschmid/taskwarrior-java-client/releases)
+Releases and Release Notes are availabe [here](/aaschmid/taskwarrior-java-client/releases).
