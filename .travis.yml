@@ -1,9 +1,14 @@
 language: java
 
-script:
-  - ./gradlew build
+os: linux
+dist: trusty
+sudo: false
 
 jdk:
+  - openjdk8
   - oraclejdk8
+  - oraclejdk9
+  - oraclejdk11
 
-sudo: false
+script:
+  - ./gradlew build
