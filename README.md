@@ -99,6 +99,21 @@ To run tests manually you will need to build and run taskwarrior server containe
 [See here how](docker/README.md)
 
 
+Keys formats
+------------
+
+Unfortunately Java only has an encoded key spec for a private key in [PKCS#8](https://en.wikipedia.org/wiki/PKCS_8)
+format. However, [taskd](https://taskwarrior.org/docs/taskserver/setup.html) generates the private key in
+[PKCS#1](https://en.wikipedia.org/wiki/PKCS_1) format if you follow the
+[documentation](https://taskwarrior.org/docs/taskserver/user.html). The tranformation command below also converts the
+key from [PEM](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail) to
+[DER](https://en.wikipedia.org/wiki/X.690#DER_encoding) format which does not need any further transformation as
+handling of the base64 encoded PEM keys.
+
+```sh
+openssl pkcs8 -topk8 -nocrypt -in $TASKD_GENERATED_KEY.key.pem -inform PEM -out $KEY_NAME.key.pkcs8.der -outform DER
+```
+
 Release notes
 -------------
 
