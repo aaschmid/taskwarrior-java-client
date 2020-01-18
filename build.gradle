@@ -1,6 +1,5 @@
 plugins {
     id 'de.aaschmid.cpd' version '1.0'
-    id 'eclipse'
     id 'java'
     id 'findbugs'
 }
@@ -8,16 +7,12 @@ plugins {
 archivesBaseName = 'taskwarrior-java-client'
 description = 'A Java client to communicate with a taskwarrior server (= taskd).'
 group = 'de.aaschmid'
-version = '1.0-SNAPSHOT'
+version = '1.1-SNAPSHOT'
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.6'
 }
 
 jar {
@@ -43,13 +38,15 @@ jar {
     }
 }
 
+test {
+    useJUnitPlatform()
+}
+
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
     from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
     from sourceSets.main.allSource
 }
 
@@ -71,4 +68,11 @@ artifacts {
     archives jar
     archives javadocJar
     archives sourcesJar
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
 }

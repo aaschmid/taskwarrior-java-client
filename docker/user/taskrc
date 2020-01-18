@@ -1,0 +1,6 @@
+data.location=~/.task
+taskd.certificate=/var/lib/taskd/client.cert.pem
+taskd.key=/var/lib/taskd/client.key.pem
+taskd.server=localhost:53589
+taskd.credentials=Public/Task Warrior/921c0dd2-728e-4a44-8605-68262754dd99
+taskd.ca=/var/lib/taskd/ca.cert.pem
