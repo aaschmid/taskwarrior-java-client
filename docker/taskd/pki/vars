@@ -1,0 +1,7 @@
+BITS=4096
+EXPIRATION_DAYS=3650
+ORGANIZATION="Göteborg Bit Factory"
+CN=localhost
+COUNTRY=SE
+STATE="Västra Götaland"
+LOCALITY="Göteborg"

@@ -1,9 +1,21 @@
 language: java
 
-script:
-  - ./gradlew build
+os: linux
+dist: trusty
+sudo: false
 
 jdk:
+  - openjdk8
   - oraclejdk8
+  - oraclejdk9
+  - oraclejdk11
 
-sudo: false
+services:
+  - docker
+
+before_install:
+  - docker pull connectical/taskd
+  - docker run -d --name=taskd -p 53589:53589 -v $TRAVIS_BUILD_DIR/docker/taskd:/var/taskd connectical/taskd
+
+script:
+  - ./gradlew build
