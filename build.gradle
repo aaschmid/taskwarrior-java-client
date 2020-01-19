@@ -1,5 +1,5 @@
 plugins {
-    id 'de.aaschmid.cpd' version '1.0'
+    id 'de.aaschmid.cpd' version '3.0'
     id 'java'
     id 'findbugs'
 }
@@ -15,9 +15,15 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.1'
+    testImplementation "org.assertj:assertj-core:3.13.2"
+    testImplementation "org.mockito:mockito-junit-jupiter:3.1.0"
+}
+
 jar {
     manifest {
-        def title = 'Taskwarrior Java client'
+        def title = 'Taskwarrior Java Client'
         def vendor = 'Andreas Schmid'
         def copyright = "${new Date()[Calendar.YEAR]} ${vendor}"
 
@@ -38,10 +44,6 @@ jar {
     }
 }
 
-test {
-    useJUnitPlatform()
-}
-
 task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
@@ -50,8 +52,32 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
 }
 
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+test {
+    useJUnitPlatform {
+        excludeTags 'integration-test'
+    }
+}
+
+task integTest(type: Test) {
+    shouldRunAfter test
+
+    useJUnitPlatform {
+        includeTags 'integration-test'
+    }
+
+    classpath = sourceSets.test.runtimeClasspath
+    testClassesDirs = sourceSets.test.output.classesDirs
+}
+check.dependsOn integTest
+
 cpd {
-    toolVersion = '5.5.1'
+    toolVersion = '6.10.0'
 }
 
 findbugs {
@@ -62,17 +88,4 @@ findbugs {
 cpdCheck {
     ignoreFailures = true
     minimumTokenCount = 25
-}
-
-artifacts {
-    archives jar
-    archives javadocJar
-    archives sourcesJar
-}
-
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
-
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
 }
