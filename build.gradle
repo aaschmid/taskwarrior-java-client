@@ -21,21 +21,35 @@ dependencies {
     testImplementation "org.mockito:mockito-junit-jupiter:3.1.0"
 }
 
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += [ '-Xlint:all', '-Werror' ]
+}
+
+tasks.withType(Jar) {
+    from(project.rootDir) {
+        include 'LICENSE', 'NOTICE'
+        into 'META-INF'
+    }
+}
+
 jar {
     manifest {
         def title = 'Taskwarrior Java client'
         def vendor = 'Andreas Schmid'
+        def today = new Date().format('yyyy-MM-dd')
         def copyright = "${new Date()[Calendar.YEAR]} ${vendor}"
 
         attributes (
             'Built-By': "Gradle ${gradle.gradleVersion}",
-            'Built-Date': new Date(), // TODO destroys incremental build feature
+            'Built-Date': today,
             'Specification-Title': title,
             'Specification-Version': version,
             'Specification-Vendor': vendor,
             'Implementation-Title': title,
             'Implementation-Version': version,
             'Implementation-Vendor': vendor,
+            'Automatic-Module-Name': 'de.aaschmid.taskwarrior.client',
             'Issue-Tracker': 'https://github.com/aaschmid/taskwarrior-java-client/issues',
             'Documentation-URL': 'https://github.com/aaschmid/taskwarrior-java-client',
             'Copyright': copyright,
