@@ -11,10 +11,12 @@ import java.util.Map;
 import de.aaschmid.taskwarrior.config.*;
 import de.aaschmid.taskwarrior.internal.ManifestHelper;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
+import de.aaschmid.taskwarrior.test.IntegrationTest;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+@IntegrationTest
 class TaskwarriorClientTest {
 
     private static final URL PROPERTIES_TASKWARRIOR = TaskwarriorClientTest.class.getResource("/taskwarrior.properties");
@@ -67,6 +69,4 @@ class TaskwarriorClientTest {
         TaskwarriorMessage response = client.sendAndReceive(new TaskwarriorMessage(headers));
         assertEquals("200", response.getHeaders().get("code"));
     }
-
-
 }
