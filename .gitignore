@@ -6,12 +6,12 @@ build/
 .groovy/
 .settings/
 bin/
-
 .classpath
 .project
 
-taskwarrior.properties
-
-# Intellij Idea
+# IntelliJ
 .idea/
 *.iml
+
+# Project specific
+taskwarrior.properties

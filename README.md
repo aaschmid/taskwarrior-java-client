@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/aaschmid/taskwarrior-java-client.png?branch=master)](https://travis-ci.org/aaschmid/taskwarrior-java-client)
+[![codecov](https://codecov.io/gh/aaschmid/taskwarrior-java-client/branch/master/graph/badge.svg)](https://codecov.io/gh/aaschmid/taskwarrior-java-client)
 [![codebeat badge](https://codebeat.co/badges/90f3d360-88bb-4040-b8b6-2e3e684f11f4)](https://codebeat.co/projects/github-com-aaschmid-taskwarrior-java-client-master)
-[![License](https://img.shields.io/github/license/aaschmid/taskwarrior-java-client.svg)](https://github.com/aaschmid/taskwarrior-java-client/blob/master/LICENSE.TXT)
+[![License](https://img.shields.io/github/license/aaschmid/taskwarrior-java-client.svg)](https://github.com/aaschmid/taskwarrior-java-client/blob/master/LICENSE.md)
 [![Issues](https://img.shields.io/github/issues/aaschmid/taskwarrior-java-client.svg)](https://github.com/aaschmid/taskwarrior-java-client/issues)
 
 taskwarrior-java-client
@@ -99,7 +100,22 @@ To run tests manually you will need to build and run taskwarrior server containe
 [See here how](docker/README.md)
 
 
+Keys formats
+------------
+
+Unfortunately Java only has an encoded key spec for a private key in [PKCS#8](https://en.wikipedia.org/wiki/PKCS_8)
+format. However, [taskd](https://taskwarrior.org/docs/taskserver/setup.html) generates the private key in
+[PKCS#1](https://en.wikipedia.org/wiki/PKCS_1) format if you follow the
+[documentation](https://taskwarrior.org/docs/taskserver/user.html). The tranformation command below also converts the
+key from [PEM](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail) to
+[DER](https://en.wikipedia.org/wiki/X.690#DER_encoding) format which does not need any further transformation as
+handling of the base64 encoded PEM keys.
+
+```sh
+openssl pkcs8 -topk8 -nocrypt -in $TASKD_GENERATED_KEY.key.pem -inform PEM -out $KEY_NAME.key.pkcs8.der -outform DER
+```
+
 Release notes
 -------------
 
-Currently there are no releases available, see [Release Notes](/aaschmid/taskwarrior-java-client/releases)
+Releases and Release Notes are availabe [here](/aaschmid/taskwarrior-java-client/releases).
