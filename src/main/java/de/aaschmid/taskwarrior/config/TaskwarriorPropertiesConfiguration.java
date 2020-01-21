@@ -33,7 +33,7 @@ public class TaskwarriorPropertiesConfiguration implements TaskwarriorConfigurat
             taskwarriorProperties.load(propertiesUrl.openStream());
 
         } catch (IOException e) {
-            throw new TaskwarriorConfigurationException("Cannot read 'taskwarrior.properties'. Check permissions and content.", e);
+            throw new TaskwarriorConfigurationException(e, "Cannot read '%s'. Check file existence and permissions.", propertiesUrl);
         }
     }
 
@@ -44,12 +44,12 @@ public class TaskwarriorPropertiesConfiguration implements TaskwarriorConfigurat
 
     @Override
     public File getPrivateKeyCertFile() {
-        return getExistingFileFromProperty(PROPERTY_TASKWARRIOR_SSL_CERT_KEY_FILE, "private key certificate");
+        return getExistingFileFromProperty(PROPERTY_TASKWARRIOR_SSL_CERT_KEY_FILE, "Private key certificate");
     }
 
     @Override
     public File getPrivateKeyFile() {
-        return getExistingFileFromProperty(PROPERTY_TASKWARRIOR_SSL_PUBLIC_KEY_FILE, "private key");
+        return getExistingFileFromProperty(PROPERTY_TASKWARRIOR_SSL_PUBLIC_KEY_FILE, "Private key");
     }
 
     @Override
@@ -58,28 +58,26 @@ public class TaskwarriorPropertiesConfiguration implements TaskwarriorConfigurat
         try {
             return InetAddress.getByName(host);
         } catch (UnknownHostException e) {
-            throw new TaskwarriorConfigurationException(e, "Cannot resolve host address '%s': %s", host, e.getMessage());
+            throw new TaskwarriorConfigurationException(e, "Cannot resolve host address '%s'.", host);
         }
     }
 
     @Override
     public int getServerPort() {
-        String key = PROPERTY_TASKWARRIOR_SERVER_PORT;
-        String value = getExistingProperty(key);
-
+        String port = getExistingProperty(PROPERTY_TASKWARRIOR_SERVER_PORT);
         try {
-            return Integer.decode(value);
+            return Integer.decode(port);
         } catch (NumberFormatException e) {
-            throw new TaskwarriorConfigurationException(e, "Property '%s' is not a parseable integer but was '%s'.", key, value);
+            throw new TaskwarriorConfigurationException(e, "Cannot resolve port '%s' because it is not a parsable.", port);
         }
     }
 
     @Override
     public TaskwarriorAuthentication getAuthentication() {
         String org = getExistingProperty(PROPERTY_TASKWARRIOR_AUTH_ORGANISATION);
+        UUID key = getExistingAuthenticationKey();
         String user = getExistingProperty(PROPERTY_TASKWARRIOR_AUTH_USER);
-        UUID key = getExistingAuthenticationKey(PROPERTY_TASKWARRIOR_AUTH_KEY);
-        return new TaskwarriorAuthentication(org, user, key);
+        return new TaskwarriorAuthentication(org, key, user);
     }
 
     private String getExistingProperty(String key) {
@@ -95,17 +93,17 @@ public class TaskwarriorPropertiesConfiguration implements TaskwarriorConfigurat
 
         File result = new File(property);
         if (!result.exists()) {
-            throw new TaskwarriorConfigurationException("Given %s file does not exist, was '%s'.", fileErrorText, property);
+            throw new TaskwarriorConfigurationException("%s file '%s' does not exist.", fileErrorText, property);
         }
         return result;
     }
 
-    private UUID getExistingAuthenticationKey(String keyProperty) {
-        String keyValue = getExistingProperty(keyProperty);
+    private UUID getExistingAuthenticationKey() {
+        String key = getExistingProperty(TaskwarriorPropertiesConfiguration.PROPERTY_TASKWARRIOR_AUTH_KEY);
         try {
-            return UUID.fromString(keyValue);
+            return UUID.fromString(key);
         } catch (IllegalArgumentException e) {
-            throw new TaskwarriorConfigurationException(e, "Property '%s' is not a parsable UUID but was '%s'.", keyProperty, keyValue);
+            throw new TaskwarriorConfigurationException(e, "Authentication key '%s' is not a parsable UUID.", key);
         }
     }
 }

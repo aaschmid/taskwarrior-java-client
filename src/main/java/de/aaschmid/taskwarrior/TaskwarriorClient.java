@@ -135,7 +135,7 @@ public class TaskwarriorClient {
 
     private Map<String, String> createHeadersFor(TaskwarriorAuthentication auth) {
         Map<String, String> result = new HashMap<>();
-        result.put("org", auth.getOrganistion());
+        result.put("org", auth.getOrganisation());
         result.put("user", auth.getUser());
         result.put("key", auth.getKey().toString());
         return result;
