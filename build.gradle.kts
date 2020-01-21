@@ -38,16 +38,19 @@ repositories {
 }
 
 dependencies {
+    annotationProcessor("org.immutables:value:2.8.3")
+
+    compileOnly("org.immutables:value-annotations:2.8.3")
+
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
     testImplementation("org.assertj:assertj-core:3.14.0")
     testImplementation("org.mockito:mockito-junit-jupiter:3.2.4")
-    testImplementation("com.google.guava:guava-testlib:28.2-jre")
 }
 
 tasks {
     withType<JavaCompile> {
         options.encoding = "UTF-8"
-        options.compilerArgs.addAll(listOf("-Xlint:all", "-Werror"))
+        options.compilerArgs.addAll(listOf("-Xlint:all", "-Werror", "-Xlint:-processing"))
     }
 
     withType<Jar> {

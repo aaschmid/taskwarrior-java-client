@@ -1,61 +1,26 @@
 package de.aaschmid.taskwarrior.config;
 
+import de.aaschmid.taskwarrior.util.immutables.HiddenImplementationStyle;
+import org.immutables.value.Value;
+import org.immutables.value.Value.Immutable;
+
 import static java.util.Objects.requireNonNull;
 
-import java.util.Objects;
 import java.util.UUID;
 
 /**
  * Immutable class containing the relevant taskwarrior authentication information.
  */
-public class TaskwarriorAuthentication {
-    private final String organisation;
-    private final UUID key;
-    private final String user;
+@Immutable @HiddenImplementationStyle
+public interface TaskwarriorAuthentication {
 
-    public TaskwarriorAuthentication(String organisation, UUID key, String user) {
-        this.organisation = requireNonNull(organisation, "'organisation' must not be null.");
-        this.key = requireNonNull(key, "'key' must not be null.");
-        this.user = requireNonNull(user, "'user' must not be null.");
+    static TaskwarriorAuthentication taskwarriorAuthentication(String org, UUID key, String user) {
+        return ImmutableTaskwarriorAuthentication.builder().organisation(org).key(key).user(user).build();
     }
 
-    public String getOrganisation() {
-        return organisation;
-    }
+    String getOrganisation();
 
-    public UUID getKey() {
-        return key;
-    }
+    UUID getKey();
 
-    public String getUser() {
-        return user;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof TaskwarriorAuthentication)) {
-            return false;
-        }
-        TaskwarriorAuthentication that = (TaskwarriorAuthentication) o;
-        return Objects.equals(organisation, that.organisation) &&
-                Objects.equals(key, that.key) &&
-                Objects.equals(user, that.user);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(organisation, key, user);
-    }
-
-    @Override
-    public String toString() {
-        return "TaskwarriorAuthentication{" +
-                "organisation='" + organisation + '\'' +
-                ", key=" + key +
-                ", user='" + user + '\'' +
-                '}';
-    }
+    String getUser();
 }

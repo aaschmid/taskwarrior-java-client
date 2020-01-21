@@ -1,5 +1,8 @@
 package de.aaschmid.taskwarrior.config;
 
+import org.immutables.value.Value;
+
+import static de.aaschmid.taskwarrior.config.TaskwarriorAuthentication.taskwarriorAuthentication;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -11,7 +14,7 @@ import java.util.Properties;
 import java.util.UUID;
 
 /** {@link TaskwarriorConfiguration} based on a specified properties file */
-public class TaskwarriorPropertiesConfiguration implements TaskwarriorConfiguration {
+class TaskwarriorPropertiesConfiguration implements TaskwarriorConfiguration {
 
     private static final String PROPERTY_TASKWARRIOR_SSL_CERT_CA_FILE = "taskwarrior.ssl.cert.ca.file";
     private static final String PROPERTY_TASKWARRIOR_SSL_CERT_KEY_FILE = "taskwarrior.ssl.cert.key.file";
@@ -77,7 +80,7 @@ public class TaskwarriorPropertiesConfiguration implements TaskwarriorConfigurat
         String org = getExistingProperty(PROPERTY_TASKWARRIOR_AUTH_ORGANISATION);
         UUID key = getExistingAuthenticationKey();
         String user = getExistingProperty(PROPERTY_TASKWARRIOR_AUTH_USER);
-        return new TaskwarriorAuthentication(org, key, user);
+        return taskwarriorAuthentication(org, key, user);
     }
 
     private String getExistingProperty(String key) {

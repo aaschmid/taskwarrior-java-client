@@ -1,5 +1,6 @@
 package de.aaschmid.taskwarrior;
 
+import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.taskwarriorMessage;
 import static java.util.Objects.requireNonNull;
 
 import java.io.ByteArrayOutputStream;
@@ -128,9 +129,9 @@ public class TaskwarriorClient {
 
         Map<String, String> headers = parseHeaders(header);
         if (payload.isEmpty() || "\n".equals(payload)) {
-            return new TaskwarriorMessage(headers);
+            return taskwarriorMessage(headers);
         }
-        return new TaskwarriorMessage(headers, payload);
+        return taskwarriorMessage(headers, payload);
     }
 
     private Map<String, String> createHeadersFor(TaskwarriorAuthentication auth) {

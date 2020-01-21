@@ -1,5 +1,6 @@
 package de.aaschmid.taskwarrior;
 
+import static de.aaschmid.taskwarrior.config.TaskwarriorConfiguration.taskwarriorPropertiesConfiguration;
 import static org.junit.jupiter.api.Assertions.*;
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.*;
 
@@ -31,7 +32,7 @@ class TaskwarriorClientTest {
                             + "Create it by copy and rename 'taskwarrior.properties.template'. "
                             + "Also fill in proper values.");
         }
-        CONFIG = new TaskwarriorPropertiesConfiguration(PROPERTIES_TASKWARRIOR);
+        CONFIG = taskwarriorPropertiesConfiguration(PROPERTIES_TASKWARRIOR);
     }
 
     @Test
@@ -51,7 +52,7 @@ class TaskwarriorClientTest {
         headers.put(HEADER_PROTOCOL, "v1");
         headers.put(HEADER_CLIENT, "taskwarrior-java-client " + IMPL_VERSION);
 
-        TaskwarriorMessage response = client.sendAndReceive(new TaskwarriorMessage(headers));
+        TaskwarriorMessage response = client.sendAndReceive(taskwarriorMessage(headers));
         assertEquals("200", response.getHeaders().get("code"));
     }
 
@@ -66,7 +67,7 @@ class TaskwarriorClientTest {
         headers.put(HEADER_PROTOCOL, "v1");
         headers.put(HEADER_CLIENT, "taskwarrior-java-client " + IMPL_VERSION);
 
-        TaskwarriorMessage response = client.sendAndReceive(new TaskwarriorMessage(headers));
+        TaskwarriorMessage response = client.sendAndReceive(taskwarriorMessage(headers));
         assertEquals("200", response.getHeaders().get("code"));
     }
 }
