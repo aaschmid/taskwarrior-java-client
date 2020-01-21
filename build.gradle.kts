@@ -107,11 +107,18 @@ tasks {
     }
     check { dependsOn(integTest) }
 
+    val jacocoMerge = register("jacocoMerge", JacocoMerge::class) {
+        executionData(withType(Test::class).toSet())
+        dependsOn(test, integTest)
+    }
+
     jacocoTestReport {
+        executionData(jacocoMerge.get().destinationFile)
         reports {
             xml.isEnabled = true
             html.isEnabled = false
         }
+        dependsOn(jacocoMerge)
     }
 
     cpdCheck {
