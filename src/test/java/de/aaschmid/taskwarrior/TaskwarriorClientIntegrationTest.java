@@ -18,9 +18,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 @IntegrationTest
-class TaskwarriorClientTest {
+class TaskwarriorClientIntegrationTest {
 
-    private static final URL PROPERTIES_TASKWARRIOR = TaskwarriorClientTest.class.getResource("/taskwarrior.properties");
+    private static final URL PROPERTIES_TASKWARRIOR = TaskwarriorClientIntegrationTest.class.getResource("/integTest.taskwarrior.properties");
     private static String IMPL_VERSION = ManifestHelper.getImplementationVersionFromManifest("local-dev");
     private static TaskwarriorConfiguration CONFIG = null;
 

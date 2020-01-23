@@ -102,7 +102,8 @@ tasks {
     val integTest = register<Test>("integTest") {
         shouldRunAfter(test)
 
-        classpath = sourceSets.test.get().runtimeClasspath
+        // run integration tests using jar file
+        classpath = jar.get().outputs.files + sourceSets.test.get().runtimeClasspath
         testClassesDirs = sourceSets.test.get().output.classesDirs
 
         useJUnitPlatform {
