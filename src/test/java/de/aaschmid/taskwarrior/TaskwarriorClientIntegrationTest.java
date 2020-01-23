@@ -17,7 +17,6 @@ import de.aaschmid.taskwarrior.test.IntegrationTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-@IntegrationTest
 class TaskwarriorClientIntegrationTest {
 
     private static final URL PROPERTIES_TASKWARRIOR = TaskwarriorClientIntegrationTest.class.getResource("/integTest.taskwarrior.properties");
@@ -35,14 +34,14 @@ class TaskwarriorClientIntegrationTest {
         CONFIG = taskwarriorPropertiesConfiguration(PROPERTIES_TASKWARRIOR);
     }
 
-    @Test
+    @IntegrationTest
     void configParsed() {
         assertNotNull(CONFIG);
         assertEquals("localhost", CONFIG.getServerHost().getCanonicalHostName());
         assertEquals(53589, CONFIG.getServerPort());
     }
 
-    @Test
+    @IntegrationTest
     void statistics() throws IOException {
 
         TaskwarriorClient client = new TaskwarriorClient(CONFIG);
@@ -57,7 +56,7 @@ class TaskwarriorClientIntegrationTest {
     }
 
 
-    @Test
+    @IntegrationTest
     void sync() throws IOException {
 
         TaskwarriorClient client = new TaskwarriorClient(CONFIG);
