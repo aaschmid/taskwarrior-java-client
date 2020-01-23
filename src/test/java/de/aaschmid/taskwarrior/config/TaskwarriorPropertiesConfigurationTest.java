@@ -63,7 +63,7 @@ class TaskwarriorPropertiesConfigurationTest {
     @Test
     void shouldSuccessfullyParseValidHost() throws Exception {
         TaskwarriorPropertiesConfiguration config = configFor("taskwarrior.server.host=localhost");
-        assertThat(config.getServerHost()).isEqualTo(InetAddress.getLocalHost());
+        assertThat(config.getServerHost()).isEqualTo(InetAddress.getByName("localhost"));
     }
 
     @Test
