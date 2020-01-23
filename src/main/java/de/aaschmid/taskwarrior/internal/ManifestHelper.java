@@ -7,6 +7,19 @@ import java.util.jar.Manifest;
 
 public class ManifestHelper {
 
+    public static String getImplementationVersionFromManifest(Class<?> clazzFileInJar, String fallbackVersion) {
+        // @formatter:off
+        return Optional.of(clazzFileInJar)
+                .flatMap(c -> getJarUrlForClass(c))
+                .flatMap(u -> getManifestAttributeValue(u, "Implementation-Version"))
+                .orElse(fallbackVersion);
+        // @formatter:on
+    }
+
+    public static String getImplementationVersionFromManifest(String fallbackVersion) {
+        return getImplementationVersionFromManifest(ManifestHelper.class, fallbackVersion);
+    }
+
     public static Optional<URL> getResourceUrlForClass(Class<?> clazz) {
         String className = clazz.getSimpleName() + ".class";
         return Optional.ofNullable(clazz.getResource(className));
@@ -24,19 +37,10 @@ public class ManifestHelper {
     public static Optional<String> getManifestAttributeValue(String jarUrl, String manifestAttributeKey) {
         try {
             Manifest manifest = new Manifest(new URL(jarUrl + "/META-INF/MANIFEST.MF").openStream());
-            return Optional.of(manifest.getMainAttributes().getValue(manifestAttributeKey));
+            return Optional.ofNullable(manifest.getMainAttributes().getValue(manifestAttributeKey));
 
         } catch (IOException e) {
             return Optional.empty();
         }
-    }
-
-    public static String getImplementationVersionFromManifest(String fallbackVersion) {
-        // @formatter:off
-        return Optional.of(ManifestHelper.class)
-                .flatMap(c -> getJarUrlForClass(c))
-                .flatMap(u -> getManifestAttributeValue(u, "Implementation-Version"))
-                .orElse(fallbackVersion);
-        // @formatter:on
     }
 }
