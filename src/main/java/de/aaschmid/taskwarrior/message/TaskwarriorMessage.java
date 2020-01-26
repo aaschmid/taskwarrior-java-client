@@ -1,14 +1,10 @@
 package de.aaschmid.taskwarrior.message;
 
+import de.aaschmid.taskwarrior.config.TaskwarriorAuthentication;
 import de.aaschmid.taskwarrior.util.immutables.HiddenImplementationStyle;
 import org.immutables.value.Value;
 
-import static java.util.Collections.unmodifiableMap;
-import static java.util.Objects.requireNonNull;
-
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 @Value.Immutable @HiddenImplementationStyle
