@@ -18,6 +18,9 @@ public class SslContextFactory {
 
     private static final String DEFAULT_PROTOCOL = "TLS";
 
+    /**
+     * @param protocol see {@link SSLContext#getInstance(String)} for valid protocols
+     */
     public static SSLContext getInstance(String protocol, KeyStore keyStore, String keyStorePassword) {
         requireNonNull(protocol, "'protocol' must not be null.");
         requireNonNull(keyStore, "'keyStore' must not be null.");
@@ -27,7 +30,7 @@ public class SslContextFactory {
         try {
             sslContext = SSLContext.getInstance(protocol);
         } catch (NoSuchAlgorithmException e) {
-            throw new TaskwarriorSslContextException(e, "Cannot get SSL context for protocol '%s': %s", protocol, e.getMessage());
+            throw new TaskwarriorSslContextException(e, "Cannot create SSL context for protocol '%s'.", protocol);
         }
         try {
             sslContext.init(loadKeyMaterial(keyStore, keyStorePassword), loadTrustMaterial(keyStore), null);
