@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.util.Objects.requireNonNull;
+
 public class KeyStoreBuilder {
 
     public static final String KEYSTORE_PASSWORD = UUID.randomUUID().toString();
@@ -44,7 +46,7 @@ public class KeyStoreBuilder {
     public KeyStoreBuilder withCaCertFile(File caCertFile) {
         requireNonNull(caCertFile, "'caCertFile' must not be null.");
         if (!caCertFile.exists()) {
-            throw new IllegalArgumentException("Given CA certificate file does not exist, was '" + caCertFile + "'.");
+            throw new IllegalArgumentException(String.format("CA certificate '%s' does not exist.", caCertFile));
         }
         this.caCertFile = caCertFile;
         return this;
@@ -53,7 +55,7 @@ public class KeyStoreBuilder {
     public KeyStoreBuilder withPrivateKeyCertFile(File privateKeyCertFile) {
         requireNonNull(privateKeyCertFile, "'privateKeyCertFile' must not be null.");
         if (!privateKeyCertFile.exists()) {
-            throw new IllegalArgumentException("Given private key certificate file does not exist, was '" + privateKeyCertFile + "'.");
+            throw new IllegalArgumentException(String.format("Private key certificate '%s' does not exist.", privateKeyCertFile));
         }
         this.privateKeyCertFile = privateKeyCertFile;
         return this;
@@ -73,7 +75,7 @@ public class KeyStoreBuilder {
     public KeyStoreBuilder withPrivateKeyFile(File privateKeyFile) {
         requireNonNull(privateKeyFile, "'privateKeyFile' must not be null.");
         if (!privateKeyFile.exists()) {
-            throw new IllegalArgumentException("Given private key file does not exist, was '" + privateKeyFile + "'.");
+            throw new IllegalArgumentException(String.format("Private key '%s' does not exist.", privateKeyFile));
         }
         this.privateKeyFile = privateKeyFile;
         return this;
@@ -92,7 +94,7 @@ public class KeyStoreBuilder {
             try {
                 result.setCertificateEntry("ca_" + idx.getAndIncrement(), c);
             } catch (KeyStoreException e) {
-                throw new TaskwarriorKeyStoreException(e, "Could not add CA certificate '%s' to keystore: %s", caCertFile, e.getMessage());
+                throw new TaskwarriorKeyStoreException(e, "Could not add CA certificate '%s' to keystore.", caCertFile);
             }
         });
 
@@ -101,8 +103,8 @@ public class KeyStoreBuilder {
         try {
             result.setEntry("key", new PrivateKeyEntry(privateKey, privateKeyCertsChain), keyStoreProtection);
         } catch (KeyStoreException e) {
-            throw new TaskwarriorKeyStoreException(e, "Could not private cert  '%s' and key  'Ts' to keystore: %s", privateKeyCertFile,
-                    privateKeyFile, e.getMessage());
+            throw new TaskwarriorKeyStoreException(e, "Could not create private cert '%s' and key '%s' to keystore.", privateKeyCertFile,
+                    privateKeyFile);
         }
 
         return result;
@@ -116,31 +118,29 @@ public class KeyStoreBuilder {
                 result.add(cf.generateCertificate(bis));
             }
         } catch (IOException e) {
-            throw new TaskwarriorKeyStoreException(e, "Could not read certificate '%s' via input stream: %s", certFile, e.getMessage());
+            throw new TaskwarriorKeyStoreException(e, "Could not read certificates of '%s' via input stream.", certFile);
         } catch (CertificateException e) {
-            throw new TaskwarriorKeyStoreException(e, "Could not generate certificates for '%s': %s", certFile, e.getMessage());
+            throw new TaskwarriorKeyStoreException(e, "Could not generate certificates for '%s'.", certFile);
         }
         return result;
     }
 
     private PrivateKey createPrivateKeyFor(File privateKeyFile) {
-        byte[] privKeyBytes;
+        byte[] privateKeyBytes;
         try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(privateKeyFile))) {
-            privKeyBytes = new byte[(int) privateKeyFile.length()];
-            bis.read(privKeyBytes);
+            privateKeyBytes = new byte[(int) privateKeyFile.length()];
+            bis.read(privateKeyBytes);
         } catch (IOException e) {
-            throw new TaskwarriorKeyStoreException(e, "Could not read private key '%s' via input stream: %s", privateKeyFile,
-                    e.getMessage());
+            throw new TaskwarriorKeyStoreException(e, "Could not read private key of '%s' via input stream.", privateKeyFile);
         }
 
         try {
             KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM_PRIVATE_KEY);
-            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privKeyBytes));
+            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
         } catch (NoSuchAlgorithmException e) {
-            throw new TaskwarriorKeyStoreException(e, "Key factory could not be initialized for algorithm '%s': %s", ALGORITHM_PRIVATE_KEY,
-                    e.getMessage());
+            throw new TaskwarriorKeyStoreException(e, "Key factory could not be initialized for algorithm '%s'.", ALGORITHM_PRIVATE_KEY);
         } catch (InvalidKeySpecException e) {
-            throw new TaskwarriorKeyStoreException(e, "Could not generate private key for '%s': %s", privateKeyFile, e.getMessage());
+            throw new TaskwarriorKeyStoreException(e, "Could not generate private key for '%s'.", privateKeyFile);
         }
     }
 }
