@@ -18,12 +18,6 @@ class TaskwarriorPropertiesConfigurationTest {
     @TempDir
     Path tempDir;
 
-    private TaskwarriorPropertiesConfiguration configFor(String... lines) throws Exception {
-        Path properties = Files.createFile(tempDir.resolve("taskwarrior.properties"));
-        Files.write(properties, Arrays.asList(lines));
-        return new TaskwarriorPropertiesConfiguration(properties.toUri().toURL());
-    }
-
     @Test
     void shouldThrowNullPointerExceptionIfUrlIsNull() {
         assertThatThrownBy(() -> new TaskwarriorPropertiesConfiguration(null))
@@ -32,7 +26,7 @@ class TaskwarriorPropertiesConfigurationTest {
     }
 
     @Test
-    void shouldThrowTaskwarriorConfigurationExceptionIfUrlIsNoExistingFile() throws Exception {
+    void shouldThrowTaskwarriorConfigurationExceptionIfUrlReferencesNotExistingFile() throws Exception {
         URL url = new URL("file:/tmp/no-file");
         assertThatThrownBy(() -> new TaskwarriorPropertiesConfiguration(url))
                 .isInstanceOf(TaskwarriorConfigurationException.class)
@@ -149,5 +143,11 @@ class TaskwarriorPropertiesConfigurationTest {
         assertThat(config.getAuthentication().getOrganisation()).isEqualTo("Org");
         assertThat(config.getAuthentication().getKey()).isEqualTo(UUID.fromString("12c98b25-9234-4a7d-824a-531f603b12fa"));
         assertThat(config.getAuthentication().getUser()).isEqualTo("User");
+    }
+
+    private TaskwarriorPropertiesConfiguration configFor(String... lines) throws Exception {
+        Path properties = Files.createFile(tempDir.resolve("taskwarrior.properties"));
+        Files.write(properties, Arrays.asList(lines));
+        return new TaskwarriorPropertiesConfiguration(properties.toUri().toURL());
     }
 }
