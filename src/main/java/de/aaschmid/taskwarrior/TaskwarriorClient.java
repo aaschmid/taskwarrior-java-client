@@ -12,8 +12,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.security.KeyStore;
 
-import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.deserializeMessageFrom;
-import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.serializeMessage;
+import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.deserialize;
+import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.serialize;
 import static java.util.Objects.requireNonNull;
 
 public class TaskwarriorClient {
@@ -46,11 +46,11 @@ public class TaskwarriorClient {
     }
 
     private void send(TaskwarriorMessage message, OutputStream out) throws IOException {
-        out.write(serializeMessage(config.getAuthentication(), message));
+        out.write(serialize(config.getAuthentication(), message));
         out.flush();
     }
 
     private TaskwarriorMessage receive(InputStream in) throws IOException {
-        return deserializeMessageFrom(in);
+        return deserialize(in);
     }
 }

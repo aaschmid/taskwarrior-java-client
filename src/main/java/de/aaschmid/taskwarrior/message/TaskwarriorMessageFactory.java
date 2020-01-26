@@ -1,6 +1,5 @@
 package de.aaschmid.taskwarrior.message;
 
-import de.aaschmid.taskwarrior.TaskwarriorClientException;
 import de.aaschmid.taskwarrior.config.TaskwarriorAuthentication;
 
 import java.io.ByteArrayOutputStream;
@@ -25,7 +24,7 @@ public class TaskwarriorMessageFactory {
     private static final String SEPARATOR_HEADER_NAME_VALUE = ": ";
     private static final Pattern PATTERN_HEADER_LINE = Pattern.compile("^(.+?)" + SEPARATOR_HEADER_NAME_VALUE + "(.+)$");
 
-    public static byte[] serializeMessage(TaskwarriorAuthentication auth, TaskwarriorMessage message) {
+    public static byte[] serialize(TaskwarriorAuthentication auth, TaskwarriorMessage message) {
         String messageData = Stream.concat(Stream.of(createHeadersFor(auth), message.getHeaders())
                 .map(Map::entrySet)
                 .flatMap(Set::stream)
@@ -35,7 +34,7 @@ public class TaskwarriorMessageFactory {
         return addFourByteBigEndianBinaryByteCountMessageLengthPrefix(bytes);
     }
 
-    public static TaskwarriorMessage deserializeMessageFrom(InputStream in) throws IOException {
+    public static TaskwarriorMessage deserialize(InputStream in) throws IOException {
         int messageLength = receiveRemainingMessageLengthFromFourByteBigEndianBinaryByteCountPrefix(in);
         byte[] data = readMessageAsByteArray(in, messageLength);
         return parseResponse(new String(data, CHARSET_TRANSFER_MESSAGE));
@@ -45,7 +44,9 @@ public class TaskwarriorMessageFactory {
         byte[] sizeBytes = new byte[4];
         int length = in.read(sizeBytes);
         if (length != 4) {
-            throw new TaskwarriorClientException("Could not read first for bytes of message containing encoded message length.");
+            throw new TaskwarriorMessageDeserializationException(
+                    "Encoded message length incomplete. Expected at least 4 bytes but only %d are available.",
+                    length);
         }
         return ((sizeBytes[0] << 24) | (sizeBytes[1] << 16) | (sizeBytes[2] << 8) | sizeBytes[3]) - 4;
     }
@@ -62,8 +63,7 @@ public class TaskwarriorMessageFactory {
         }
 
         if (remaining > 0) {
-            throw new TaskwarriorClientException("Could not retrieve complete message, remaining '%d' of '%d' bytes.", remaining,
-                    messageLength);
+            throw new TaskwarriorMessageDeserializationException("Could not retrieve complete message. Missing %d bytes.", remaining);
         }
 
         out.flush();
@@ -107,15 +107,15 @@ public class TaskwarriorMessageFactory {
         Map<String, String> headers = new HashMap<>();
         for (String headerLine : header.split("\n")) {
             Matcher matcher = PATTERN_HEADER_LINE.matcher(headerLine);
-            if (matcher.matches()) {
-                String name = matcher.group(1);
-                String value = matcher.group(2);
-                headers.put(name, value);
-
-            } else {
-                throw new TaskwarriorClientException("Regex pattern '%s' does not match header line '%s'.", PATTERN_HEADER_LINE.pattern(),
-                        headerLine);
+            if (!matcher.matches()) {
+                throw new TaskwarriorMessageDeserializationException(
+                        "Header line '%s' is not parsable, it must match '%s'.",
+                        headerLine,
+                        PATTERN_HEADER_LINE.pattern());
             }
+            String name = matcher.group(1);
+            String value = matcher.group(2);
+            headers.put(name, value);
         }
         return headers;
     }
