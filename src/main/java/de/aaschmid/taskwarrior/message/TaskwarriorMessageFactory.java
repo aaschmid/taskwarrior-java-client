@@ -80,7 +80,7 @@ public class TaskwarriorMessageFactory {
         if (payload.isEmpty() || "\n".equals(payload)) {
             return taskwarriorMessage(headers);
         }
-        return taskwarriorMessage(headers, payload);
+        return taskwarriorMessage(headers, payload.trim());
     }
 
     private static Map<String, String> createHeadersFor(TaskwarriorAuthentication auth) {
