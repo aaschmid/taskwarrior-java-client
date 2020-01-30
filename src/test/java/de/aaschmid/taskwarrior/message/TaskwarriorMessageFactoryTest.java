@@ -65,7 +65,6 @@ class TaskwarriorMessageFactoryTest {
         assertThatThrownBy(() -> deserialize(is))
                 .isInstanceOf(TaskwarriorMessageDeserializationException.class)
                 .hasMessage("Encoded message length incomplete. Expected at least 4 bytes but only 2 are available.");
-
     }
 
     @Test
@@ -75,7 +74,6 @@ class TaskwarriorMessageFactoryTest {
         assertThatThrownBy(() -> deserialize(is))
                 .isInstanceOf(TaskwarriorMessageDeserializationException.class)
                 .hasMessage("Could not retrieve complete message. Missing 3 bytes.");
-
     }
 
     @Test
@@ -88,7 +86,6 @@ class TaskwarriorMessageFactoryTest {
         assertThatThrownBy(() -> deserialize(new ByteArrayInputStream(messageBytes)))
                 .isInstanceOf(TaskwarriorMessageDeserializationException.class)
                 .hasMessageMatching("Header line 'invalid header value' is not parsable, it must match '.*'.");
-
     }
 
     @Test

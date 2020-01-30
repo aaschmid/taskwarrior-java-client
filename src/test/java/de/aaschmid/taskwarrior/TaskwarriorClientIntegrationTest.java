@@ -27,9 +27,7 @@ class TaskwarriorClientIntegrationTest {
 
     private static String SYNC_KEY = "f92d5c8d-4cf9-4cf5-b72f-1f4a70cf9b20";
 
-
     private TaskwarriorClient client = new TaskwarriorClient(CONFIG);
-
 
     @IntegrationTest
     void statistics() throws IOException {
@@ -48,7 +46,6 @@ class TaskwarriorClientIntegrationTest {
                 .contains(entry("users", "1"));
         assertThat(response.getPayload()).isNotPresent();
     }
-
 
     @IntegrationTest
     void syncWithoutSyncKey() throws IOException { // FIXME maybe get rid of ugly IOException

@@ -38,7 +38,6 @@ public class ManifestHelper {
         try {
             Manifest manifest = new Manifest(new URL(jarUrl + "/META-INF/MANIFEST.MF").openStream());
             return Optional.ofNullable(manifest.getMainAttributes().getValue(manifestAttributeKey));
-
         } catch (IOException e) {
             return Optional.empty();
         }

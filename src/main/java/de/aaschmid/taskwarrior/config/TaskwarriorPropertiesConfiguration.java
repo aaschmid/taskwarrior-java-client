@@ -34,7 +34,6 @@ class TaskwarriorPropertiesConfiguration implements TaskwarriorConfiguration {
         this.taskwarriorProperties = new Properties();
         try {
             taskwarriorProperties.load(propertiesUrl.openStream());
-
         } catch (IOException e) {
             throw new TaskwarriorConfigurationException(e, "Cannot read '%s'. Check file existence and permissions.", propertiesUrl);
         }
