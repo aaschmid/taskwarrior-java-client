@@ -137,7 +137,7 @@ tasks {
         }
 
         // Fixes https://github.com/spotbugs/spotbugs-gradle-plugin/issues/115
-        val sourceSetName = name.get(8).toLowerCase() + name.substring(8).substring(1)
+        val sourceSetName = name[8].toLowerCase() + name.substring(8).substring(1)
         classpath += sourceSets.named(sourceSetName).get().compileClasspath
     }
 }

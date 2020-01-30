@@ -127,7 +127,11 @@ public class KeyStoreBuilder {
         byte[] privateKeyBytes;
         try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(privateKeyFile))) {
             privateKeyBytes = new byte[(int) privateKeyFile.length()];
-            bis.read(privateKeyBytes);
+            int readBytes = bis.read(privateKeyBytes);
+            if (readBytes != privateKeyFile.length()) {
+                throw new TaskwarriorKeyStoreException("Failure reading content of '%s': expected %d but received %d bytes.",
+                        privateKeyFile, privateKeyBytes.length, readBytes);
+            }
         } catch (IOException e) {
             throw new TaskwarriorKeyStoreException(e, "Could not read private key of '%s' via input stream.", privateKeyFile);
         }

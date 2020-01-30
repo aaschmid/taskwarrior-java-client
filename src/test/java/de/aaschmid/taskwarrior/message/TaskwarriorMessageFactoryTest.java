@@ -77,7 +77,7 @@ class TaskwarriorMessageFactoryTest {
     }
 
     @Test
-    void deserialize_shouldThrowTaskwarriorMessageDeserializationExceptionIfHeaderEntryIsBroken() throws IOException {
+    void deserialize_shouldThrowTaskwarriorMessageDeserializationExceptionIfHeaderEntryIsBroken() {
         byte[] messageBytes = new byte[95];
         System.arraycopy(new byte[] { 0, 0, 0, 95 }, 0, messageBytes, 0, 4);
         byte[] message = String.join("\n", "invalid header value", "", "").getBytes(StandardCharsets.UTF_8);

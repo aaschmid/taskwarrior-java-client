@@ -10,7 +10,7 @@ public class ManifestHelper {
     public static String getImplementationVersionFromManifest(Class<?> clazzFileInJar, String fallbackVersion) {
         // @formatter:off
         return Optional.of(clazzFileInJar)
-                .flatMap(c -> getJarUrlForClass(c))
+                .flatMap(ManifestHelper::getJarUrlForClass)
                 .flatMap(u -> getManifestAttributeValue(u, "Implementation-Version"))
                 .orElse(fallbackVersion);
         // @formatter:on

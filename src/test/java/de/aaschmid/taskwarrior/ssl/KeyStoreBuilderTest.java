@@ -20,7 +20,7 @@ class KeyStoreBuilderTest {
     @TempDir
     Path tempDir;
 
-    private KeyStoreBuilder keyStoreBuilder = new KeyStoreBuilder();
+    private final KeyStoreBuilder keyStoreBuilder = new KeyStoreBuilder();
 
     @Test
     void withKeyStoreProtection_shouldThrowNullPointerExceptionOnNull() {

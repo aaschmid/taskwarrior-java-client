@@ -22,12 +22,12 @@ class TaskwarriorClientIntegrationTest {
 
     private static final URL PROPERTIES_TASKWARRIOR =
             TaskwarriorClientIntegrationTest.class.getResource("/integTest.taskwarrior.properties");
-    private static String IMPL_VERSION = ManifestHelper.getImplementationVersionFromManifest("local-dev");
-    private static TaskwarriorConfiguration CONFIG = taskwarriorPropertiesConfiguration(PROPERTIES_TASKWARRIOR);
+    private static final String IMPL_VERSION = ManifestHelper.getImplementationVersionFromManifest("local-dev");
+    private static final TaskwarriorConfiguration CONFIG = taskwarriorPropertiesConfiguration(PROPERTIES_TASKWARRIOR);
 
-    private static String SYNC_KEY = "f92d5c8d-4cf9-4cf5-b72f-1f4a70cf9b20";
+    private static final String SYNC_KEY = "f92d5c8d-4cf9-4cf5-b72f-1f4a70cf9b20";
 
-    private TaskwarriorClient client = new TaskwarriorClient(CONFIG);
+    private final TaskwarriorClient client = new TaskwarriorClient(CONFIG);
 
     @IntegrationTest
     void statistics() throws IOException {
@@ -59,12 +59,9 @@ class TaskwarriorClientIntegrationTest {
         assertThat(response.getHeaders())
                 .contains(entry("code", "200"))
                 .contains(entry("status", "Ok"));
-        assertThat(response.getPayload()).hasValueSatisfying(payload -> {
-            assertThat(payload)
-                    .startsWith(
-                            "{\"description\":\"some task\",\"entry\":\"20190831T170318Z\",\"modified\":\"20190831T170318Z\",\"status\":\"pending\",\"uuid\":\"1e8cd315-c78b-46f6-bdbd-64caf83c275a\"}")
-                    .endsWith(SYNC_KEY);
-        });
+        assertThat(response.getPayload()).hasValueSatisfying(payload -> assertThat(payload).startsWith(
+                "{\"description\":\"some task\",\"entry\":\"20190831T170318Z\",\"modified\":\"20190831T170318Z\",\"status\":\"pending\",\"uuid\":\"1e8cd315-c78b-46f6-bdbd-64caf83c275a\"}")
+                .endsWith(SYNC_KEY));
     }
 
     @IntegrationTest
