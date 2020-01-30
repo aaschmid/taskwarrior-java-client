@@ -10,9 +10,12 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS) // Make it class retention for incremental compilation
 @Value.Style(
-        typeImmutable = "Immutable*",
-        visibility = Value.Style.ImplementationVisibility.PACKAGE,
-        builderVisibility = Value.Style.BuilderVisibility.PACKAGE
+        builderVisibility = Value.Style.BuilderVisibility.PACKAGE,
+        depluralize = true,
+        get = { "is*", "get*" },
+        jdkOnly = true,
+        privateNoargConstructor = true,
+        visibility = Value.Style.ImplementationVisibility.PRIVATE
 )
 public @interface HiddenImplementationStyle {
 }
