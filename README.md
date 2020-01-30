@@ -20,8 +20,7 @@ taskwarrior-java-client
 What is it
 ----------
 
-A Java client to communicate with a [taskwarrior][] server (=
-[taskd](https://taskwarrior.org/docs/taskserver/why.html)).
+A Java client to communicate with a [taskwarrior][] server (= [taskd](https://taskwarrior.org/docs/taskserver/why.html)).
 
 [taskwarrior]: https://taskwarrior.org/
 
@@ -29,9 +28,8 @@ A Java client to communicate with a [taskwarrior][] server (=
 Motivation and distinction
 --------------------------
 
-The current taskwarrior Android app does not satisfy my requirements. Therefore
-I created this client library to integrate it into my prefered task app.  And I
-also want to share it with everybody who will love to use it.
+The current taskwarrior Android app does not satisfy my requirements. Therefore I created this client library to
+integrate it into my preferred task app. And I also want to share it with everybody who will love to use it.
 
 
 Requirements
@@ -43,10 +41,8 @@ Requirements
 Download
 --------
 
-Currently there is no released version available but feel free to clone / fork
-and build it yourself. If you would love to see this on [Maven
-Central](http://search.maven.org/) feel free to create an issue.
-
+Currently there is no released version available but feel free to clone / fork and build it yourself. If you would
+love to see this on [Maven Central](http://search.maven.org/) feel free to create an issue.
 
 Usage example
 -------------
@@ -69,7 +65,7 @@ public class Taskwarrior {
 
     private static final URL PROPERTIES_TASKWARRIOR = Taskwarrior.class.getResource("/taskwarrior.properties");
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         if (PROPERTIES_TASKWARRIOR == null) {
             throw new IllegalStateException(
                     "No 'taskwarrior.properties' found on Classpath. Create it by copy and rename 'taskwarrior.properties.template'. Also fill in proper values.");
@@ -97,8 +93,7 @@ Used `taskwarrior.properties` can be created by copying and adjusting
 Testing
 -------
 
-To run tests manually you will need to build and run taskwarrior server container.
-[See here how](docker/README.md)
+To run tests manually you will need to build and run taskwarrior server container. [See here how](docker/taskd/README.md).
 
 
 Keys formats
@@ -107,7 +102,7 @@ Keys formats
 Unfortunately Java only has an encoded key spec for a private key in [PKCS#8](https://en.wikipedia.org/wiki/PKCS_8)
 format. However, [taskd](https://taskwarrior.org/docs/taskserver/setup.html) generates the private key in
 [PKCS#1](https://en.wikipedia.org/wiki/PKCS_1) format if you follow the
-[documentation](https://taskwarrior.org/docs/taskserver/user.html). The tranformation command below also converts the
+[documentation](https://taskwarrior.org/docs/taskserver/user.html). The transformation command below also converts the
 key from [PEM](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail) to
 [DER](https://en.wikipedia.org/wiki/X.690#DER_encoding) format which does not need any further transformation as
 handling of the base64 encoded PEM keys.
@@ -119,4 +114,4 @@ openssl pkcs8 -topk8 -nocrypt -in $TASKD_GENERATED_KEY.key.pem -inform PEM -out 
 Release notes
 -------------
 
-Releases and Release Notes are availabe [here](/aaschmid/taskwarrior-java-client/releases).
+Releases and Release Notes are available [here](https://github.com//aaschmid/taskwarrior-java-client/releases).
