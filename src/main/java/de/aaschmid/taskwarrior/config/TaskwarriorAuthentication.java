@@ -1,14 +1,15 @@
 package de.aaschmid.taskwarrior.config;
 
+import java.util.UUID;
+
 import de.aaschmid.taskwarrior.util.immutables.HiddenImplementationStyle;
 import org.immutables.value.Value.Immutable;
-
-import java.util.UUID;
 
 /**
  * Immutable class containing the relevant taskwarrior authentication information.
  */
-@Immutable @HiddenImplementationStyle
+@Immutable
+@HiddenImplementationStyle
 public interface TaskwarriorAuthentication {
 
     static TaskwarriorAuthentication taskwarriorAuthentication(String org, UUID key, String user) {

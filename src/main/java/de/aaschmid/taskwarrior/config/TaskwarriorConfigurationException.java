@@ -2,7 +2,9 @@ package de.aaschmid.taskwarrior.config;
 
 import de.aaschmid.taskwarrior.TaskwarriorException;
 
-/** Exception occurs if any configuration problem occurs. */
+/**
+ * Exception occurs if any configuration problem occurs.
+ */
 public class TaskwarriorConfigurationException extends TaskwarriorException {
 
     private static final long serialVersionUID = 1L;

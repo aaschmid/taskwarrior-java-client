@@ -1,14 +1,14 @@
 package de.aaschmid.taskwarrior;
 
-import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
-import de.aaschmid.taskwarrior.internal.ManifestHelper;
-import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
-import de.aaschmid.taskwarrior.test.IntegrationTest;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
+import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
+import de.aaschmid.taskwarrior.internal.ManifestHelper;
+import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
+import de.aaschmid.taskwarrior.test.IntegrationTest;
 
 import static de.aaschmid.taskwarrior.config.TaskwarriorConfiguration.taskwarriorPropertiesConfiguration;
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.HEADER_CLIENT;

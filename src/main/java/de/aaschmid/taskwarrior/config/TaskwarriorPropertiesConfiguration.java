@@ -1,10 +1,5 @@
 package de.aaschmid.taskwarrior.config;
 
-import org.immutables.value.Value;
-
-import static de.aaschmid.taskwarrior.config.TaskwarriorAuthentication.taskwarriorAuthentication;
-import static java.util.Objects.requireNonNull;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -13,7 +8,12 @@ import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.UUID;
 
-/** {@link TaskwarriorConfiguration} based on a specified properties file */
+import static de.aaschmid.taskwarrior.config.TaskwarriorAuthentication.taskwarriorAuthentication;
+import static java.util.Objects.requireNonNull;
+
+/**
+ * {@link TaskwarriorConfiguration} based on a specified properties file
+ */
 class TaskwarriorPropertiesConfiguration implements TaskwarriorConfiguration {
 
     private static final String PROPERTY_TASKWARRIOR_SSL_CERT_CA_FILE = "taskwarrior.ssl.cert.ca.file";

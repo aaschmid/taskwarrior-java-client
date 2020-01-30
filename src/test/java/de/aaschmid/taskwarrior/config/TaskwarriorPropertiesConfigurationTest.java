@@ -1,8 +1,5 @@
 package de.aaschmid.taskwarrior.config;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -11,7 +8,12 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TaskwarriorPropertiesConfigurationTest {
 

@@ -1,6 +1,8 @@
 package de.aaschmid.taskwarrior;
 
-/** Exception occurs if any taskwarrior problem occurs. */
+/**
+ * Exception occurs if any taskwarrior problem occurs.
+ */
 public class TaskwarriorException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

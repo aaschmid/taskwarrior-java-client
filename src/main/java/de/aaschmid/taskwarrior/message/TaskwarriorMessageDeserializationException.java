@@ -1,9 +1,10 @@
 package de.aaschmid.taskwarrior.message;
 
-import de.aaschmid.taskwarrior.TaskwarriorClient;
 import de.aaschmid.taskwarrior.TaskwarriorException;
 
-/** Exception occurs if a problem within the deserialization of a {@link TaskwarriorMessage} occurs. */
+/**
+ * Exception occurs if a problem within the deserialization of a {@link TaskwarriorMessage} occurs.
+ */
 public class TaskwarriorMessageDeserializationException extends TaskwarriorException {
 
     private static final long serialVersionUID = 1L;

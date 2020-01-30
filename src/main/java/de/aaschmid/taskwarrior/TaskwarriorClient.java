@@ -1,16 +1,16 @@
 package de.aaschmid.taskwarrior;
 
-import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
-import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
-import de.aaschmid.taskwarrior.ssl.KeyStoreBuilder;
-import de.aaschmid.taskwarrior.ssl.SslContextFactory;
-
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.security.KeyStore;
+
+import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
+import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
+import de.aaschmid.taskwarrior.ssl.KeyStoreBuilder;
+import de.aaschmid.taskwarrior.ssl.SslContextFactory;
 
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.deserialize;
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.serialize;

@@ -1,6 +1,8 @@
 package de.aaschmid.taskwarrior;
 
-/** Exception occurs if a problem within {@link TaskwarriorClient} occurs. */
+/**
+ * Exception occurs if a problem within {@link TaskwarriorClient} occurs.
+ */
 public class TaskwarriorClientException extends TaskwarriorException {
 
     private static final long serialVersionUID = 1L;

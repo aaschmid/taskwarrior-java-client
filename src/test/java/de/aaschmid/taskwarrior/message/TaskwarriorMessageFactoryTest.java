@@ -1,8 +1,5 @@
 package de.aaschmid.taskwarrior.message;
 
-import de.aaschmid.taskwarrior.config.TaskwarriorAuthentication;
-import org.junit.jupiter.api.Test;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +9,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import de.aaschmid.taskwarrior.config.TaskwarriorAuthentication;
+import org.junit.jupiter.api.Test;
 
 import static de.aaschmid.taskwarrior.config.TaskwarriorAuthentication.taskwarriorAuthentication;
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.deserialize;

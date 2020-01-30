@@ -1,7 +1,5 @@
 package de.aaschmid.taskwarrior.message;
 
-import de.aaschmid.taskwarrior.config.TaskwarriorAuthentication;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +12,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import de.aaschmid.taskwarrior.config.TaskwarriorAuthentication;
 
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.taskwarriorMessage;
 
