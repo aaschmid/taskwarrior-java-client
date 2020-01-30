@@ -29,7 +29,7 @@ class SslContextFactoryTest {
 
     @Test
     void getInstance_shouldThrowNullPointerExceptionIfKeyStorePasswordIsNull() throws KeyStoreException {
-        KeyStore keyStore = KeyStore.Builder.newInstance(KeyStore.getDefaultType(), null, new PasswordProtection("test".toCharArray())).getKeyStore();
+        KeyStore keyStore = createDefaultKeyStore("test1");
         assertThatThrownBy(() -> SslContextFactory.getInstance("SSL", keyStore, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("'keyStorePassword' must not be null.");
@@ -37,7 +37,7 @@ class SslContextFactoryTest {
 
     @Test
     void getInstance_shouldThrowTaskwarriorSslContextExceptionIfProtocolIsInvalid() throws KeyStoreException {
-        KeyStore keyStore = KeyStore.Builder.newInstance(KeyStore.getDefaultType(), null, new PasswordProtection("test".toCharArray())).getKeyStore();
+        KeyStore keyStore = createDefaultKeyStore("test2");
         assertThatThrownBy(() -> SslContextFactory.getInstance("invalid", keyStore, "test"))
                 .isInstanceOf(TaskwarriorSslContextException.class)
                 .hasMessage("Cannot create SSL context for protocol 'invalid'.")
@@ -46,9 +46,13 @@ class SslContextFactoryTest {
 
     @Test
     void getInstance_should() throws KeyStoreException {
-        KeyStore keyStore = KeyStore.Builder.newInstance(KeyStore.getDefaultType(), null, new PasswordProtection("test".toCharArray())).getKeyStore();
+        KeyStore keyStore = createDefaultKeyStore("test3");
         SSLContext sslContext = SslContextFactory.getInstance("SSL", keyStore, "test");
 
         assertThat(sslContext).isNotNull();
+    }
+
+    private static KeyStore createDefaultKeyStore(String password) throws KeyStoreException {
+        return KeyStore.Builder.newInstance(KeyStore.getDefaultType(), null, new PasswordProtection(password.toCharArray())).getKeyStore();
     }
 }
