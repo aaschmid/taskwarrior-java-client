@@ -2,7 +2,7 @@
 [![CircleCI](https://circleci.com/gh/aaschmid/taskwarrior-java-client.svg?style=svg)](https://circleci.com/gh/aaschmid/taskwarrior-java-client)
 [![codecov](https://codecov.io/gh/aaschmid/taskwarrior-java-client/branch/master/graph/badge.svg)](https://codecov.io/gh/aaschmid/taskwarrior-java-client)
 [![codebeat](https://codebeat.co/badges/90f3d360-88bb-4040-b8b6-2e3e684f11f4)](https://codebeat.co/projects/github-com-aaschmid-taskwarrior-java-client-master)
-[![License](https://img.shields.io/github/license/aaschmid/taskwarrior-java-client.svg)](https://github.com/aaschmid/taskwarrior-java-client/blob/master/LICENSE.md)
+[![License](https://img.shields.io/github/license/aaschmid/taskwarrior-java-client.svg)](https://github.com/aaschmid/taskwarrior-java-client/blob/master/LICENSE)
 [![Issues](https://img.shields.io/github/issues/aaschmid/taskwarrior-java-client.svg)](https://github.com/aaschmid/taskwarrior-java-client/issues)
 
 taskwarrior-java-client
