@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter
 
 plugins {
     `java-library`
+    id("com.github.johnrengelman.shadow") version "5.2.0"
     jacoco
 
     id("com.github.spotbugs") version "3.0.0"
@@ -29,7 +30,7 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 
-    withSourcesJar()
+    withJavadocJar()
     withSourcesJar()
 }
 
@@ -66,6 +67,7 @@ tasks {
     }
 
     jar {
+        enabled = false
         manifest {
             val now = LocalDate.now()
 
@@ -92,6 +94,15 @@ tasks {
                     "License" to "Apache License v2.0, January 2004"
             )
         }
+    }
+
+    shadowJar {
+        archiveClassifier.set("")
+        minimize()
+        relocate("org.bouncycastle", "de.aaschmid.taskwarrior.thirdparty.org.bouncycastle")
+    }
+    assemble {
+        dependsOn(shadowJar)
     }
 
     test {
@@ -174,7 +185,11 @@ tasks.withType<GenerateModuleMetadata> {
 publishing {
     publications {
         register<MavenPublication>("mavenJava") {
-            from(components["java"])
+            // Not using `from(components["java"])` prevents from adding any shadowed dependency to resulting pom.xml
+            shadow.component(this)
+            artifact(tasks.get("javadocJar"))
+            artifact(tasks.get("sourcesJar"))
+
             pom {
                 packaging = "jar"
 
