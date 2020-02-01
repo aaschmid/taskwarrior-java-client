@@ -73,10 +73,10 @@ tasks {
                     "Built-By" to "Gradle ${gradle.gradleVersion}",
                     "Built-Date" to today,
                     "Specification-Title" to title,
-                    "Specification-Version" to archiveVersion,
+                    "Specification-Version" to archiveVersion.get(),
                     "Specification-Vendor" to vendor,
                     "Implementation-Title" to title,
-                    "Implementation-Version" to archiveVersion,
+                    "Implementation-Version" to archiveVersion.get(),
                     "Implementation-Vendor" to vendor,
 
                     "Automatic-Module-Name" to "de.aaschmid.taskwarrior.client",
