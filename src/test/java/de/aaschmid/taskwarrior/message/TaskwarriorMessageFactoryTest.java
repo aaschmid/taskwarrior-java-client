@@ -10,10 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import de.aaschmid.taskwarrior.config.TaskwarriorAuthentication;
 import org.junit.jupiter.api.Test;
 
-import static de.aaschmid.taskwarrior.config.TaskwarriorAuthentication.taskwarriorAuthentication;
+import static de.aaschmid.taskwarrior.message.TaskwarriorAuthentication.taskwarriorAuthentication;
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.deserialize;
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.serialize;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,7 +25,7 @@ class TaskwarriorMessageFactoryTest {
 
     @Test
     void serialize_shouldReturnCorrectBytesArray() {
-        TaskwarriorAuthentication auth = taskwarriorAuthentication("org", uuid, "user");
+        TaskwarriorAuthentication auth = taskwarriorAuthentication(uuid, "org", "user");
         Map<String, String> headers = new LinkedHashMap<>();
         headers.put("header1", "value1");
         headers.put("header2", "value2");
@@ -43,7 +42,7 @@ class TaskwarriorMessageFactoryTest {
 
     @Test
     void serialize_shouldReturnCorrectMessageLengthInResultingBytesArray() {
-        TaskwarriorAuthentication auth = taskwarriorAuthentication("org", uuid, "user");
+        TaskwarriorAuthentication auth = taskwarriorAuthentication(uuid, "org", "user");
         Map<String, String> headers = new LinkedHashMap<>();
         for (int i = 0; i < 100; i++) {
             headers.put(String.format("h%03d", i), "val");

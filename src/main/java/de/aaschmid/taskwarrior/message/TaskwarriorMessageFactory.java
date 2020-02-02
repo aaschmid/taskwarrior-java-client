@@ -13,8 +13,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.aaschmid.taskwarrior.config.TaskwarriorAuthentication;
-
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.taskwarriorMessage;
 
 public class TaskwarriorMessageFactory {
@@ -85,9 +83,9 @@ public class TaskwarriorMessageFactory {
 
     private static Map<String, String> createHeadersFor(TaskwarriorAuthentication auth) {
         Map<String, String> result = new HashMap<>();
-        result.put("org", auth.getOrganisation());
+        result.put("org", auth.getOrganization());
         result.put("user", auth.getUser());
-        result.put("key", auth.getKey().toString());
+        result.put("key", auth.getAuthKey().toString());
         return result;
     }
 

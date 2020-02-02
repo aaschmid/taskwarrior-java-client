@@ -8,9 +8,13 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.UUID;
 
+import de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.*;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SERVER_PORT;
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -41,15 +45,16 @@ class TaskwarriorPropertiesConfigurationTest {
     }
 
     @Test
-    void shouldThrowTaskwarriorConfigurationExceptionIfPropertyIsNotAvailable() {
-        assertThatThrownBy(() -> configFor().getServerHost())
+    void shouldThrowTaskwarriorConfigurationExceptionIfHostIsMissing() throws Exception {
+        TaskwarriorPropertiesConfiguration config = configFor();
+        assertThatThrownBy(config::getServerHost)
                 .isInstanceOf(TaskwarriorConfigurationException.class)
-                .hasMessageMatching("Could not find property with key 'taskwarrior.server.host' in '.*/taskwarrior.properties'.");
+                .hasMessageMatching(format("Could not find property with key '%s' in '.*/taskwarrior.properties'.", SERVER_HOST.key));
     }
 
     @Test
     void shouldThrowTaskwarriorConfigurationExceptionForInvalidHost() throws Exception {
-        TaskwarriorPropertiesConfiguration config = configFor("taskwarrior.server.host=host.unknown");
+        TaskwarriorPropertiesConfiguration config = configFor(prop(SERVER_HOST, "host.unknown"));
         assertThatThrownBy(config::getServerHost)
                 .isInstanceOf(TaskwarriorConfigurationException.class)
                 .hasMessage("Cannot resolve host address 'host.unknown'.")
@@ -58,13 +63,21 @@ class TaskwarriorPropertiesConfigurationTest {
 
     @Test
     void shouldSuccessfullyParseValidHost() throws Exception {
-        TaskwarriorPropertiesConfiguration config = configFor("taskwarrior.server.host=localhost");
+        TaskwarriorPropertiesConfiguration config = configFor(prop(SERVER_HOST, "localhost"));
         assertThat(config.getServerHost()).isEqualTo(InetAddress.getByName("localhost"));
     }
 
     @Test
+    void shouldThrowTaskwarriorConfigurationExceptionIfPortIsMissing() throws Exception {
+        TaskwarriorPropertiesConfiguration config = configFor();
+        assertThatThrownBy(config::getServerPort)
+                .isInstanceOf(TaskwarriorConfigurationException.class)
+                .hasMessageMatching(format("Could not find property with key '%s' in '.*/taskwarrior.properties'.", SERVER_PORT.key));
+    }
+
+    @Test
     void shouldThrowTaskwarriorConfigurationExceptionForInvalidPort() throws Exception {
-        TaskwarriorPropertiesConfiguration config = configFor("taskwarrior.server.port=invalid");
+        TaskwarriorPropertiesConfiguration config = configFor(prop(SERVER_PORT, "invalid"));
         assertThatThrownBy(config::getServerPort)
                 .isInstanceOf(TaskwarriorConfigurationException.class)
                 .hasMessage("Cannot resolve port 'invalid' because it is not a parsable.")
@@ -73,13 +86,21 @@ class TaskwarriorPropertiesConfigurationTest {
 
     @Test
     void shouldSuccessfullyParseValidPort() throws Exception {
-        TaskwarriorPropertiesConfiguration config = configFor("taskwarrior.server.port=12345");
+        TaskwarriorPropertiesConfiguration config = configFor(prop(SERVER_PORT, "12345"));
         assertThat(config.getServerPort()).isEqualTo(12345);
     }
 
     @Test
+    void shouldThrowTaskwarriorConfigurationExceptionIfCaCertIsMissing() throws Exception {
+        TaskwarriorPropertiesConfiguration config = configFor();
+        assertThatThrownBy(config::getCaCertFile)
+                .isInstanceOf(TaskwarriorConfigurationException.class)
+                .hasMessageMatching(format("Could not find property with key '%s' in '.*/taskwarrior.properties'.", SSL_CERT_CA_FILE.key));
+    }
+
+    @Test
     void shouldThrowTaskwarriorConfigurationExceptionForInvalidCaCert() throws Exception {
-        TaskwarriorPropertiesConfiguration config = configFor("taskwarrior.ssl.cert.ca.file=not-existing.cert.pem");
+        TaskwarriorPropertiesConfiguration config = configFor(prop(SSL_CERT_CA_FILE, "not-existing.cert.pem"));
         assertThatThrownBy(config::getCaCertFile)
                 .isInstanceOf(TaskwarriorConfigurationException.class)
                 .hasMessage("CA certificate file 'not-existing.cert.pem' does not exist.");
@@ -88,68 +109,106 @@ class TaskwarriorPropertiesConfigurationTest {
     @Test
     void shouldSuccessfullyParseValidCaCert() throws Exception {
         Path caCertFile = Files.createFile(tempDir.resolve("ca.cert.pem"));
-        TaskwarriorPropertiesConfiguration config = configFor("taskwarrior.ssl.cert.ca.file=" + caCertFile.toAbsolutePath());
+        TaskwarriorPropertiesConfiguration config = configFor(prop(SSL_CERT_CA_FILE, caCertFile.toFile().getAbsolutePath()));
         assertThat(config.getCaCertFile()).isEqualTo(caCertFile.toFile());
     }
 
     @Test
-    void shouldThrowTaskwarriorConfigurationExceptionForInvalidKeyCert() throws Exception {
-        TaskwarriorPropertiesConfiguration config = configFor("taskwarrior.ssl.cert.key.file=not-existing.cert.pem");
+    void shouldThrowTaskwarriorConfigurationExceptionIfPrivateKeyCertIsMissing() throws Exception {
+        TaskwarriorPropertiesConfiguration config = configFor();
+        assertThatThrownBy(config::getPrivateKeyCertFile)
+                .isInstanceOf(TaskwarriorConfigurationException.class)
+                .hasMessageMatching(format("Could not find property with key '%s' in '.*/taskwarrior.properties'.", SSL_PRIVATE_KEY_CERT_FILE.key));
+    }
+
+    @Test
+    void shouldThrowTaskwarriorConfigurationExceptionForInvalidPrivateKeyCert() throws Exception {
+        TaskwarriorPropertiesConfiguration config = configFor(prop(SSL_PRIVATE_KEY_CERT_FILE, "not-existing.cert.pem"));
         assertThatThrownBy(config::getPrivateKeyCertFile)
                 .isInstanceOf(TaskwarriorConfigurationException.class)
                 .hasMessage("Private key certificate file 'not-existing.cert.pem' does not exist.");
     }
 
     @Test
-    void shouldSuccessfullyParseValidKeyCert() throws Exception {
+    void shouldSuccessfullyParseValidPrivateKeyCert() throws Exception {
         Path userCertFile = Files.createFile(tempDir.resolve("user.cert.pem"));
-        TaskwarriorPropertiesConfiguration config = configFor("taskwarrior.ssl.cert.key.file=" + userCertFile.toAbsolutePath());
+        TaskwarriorPropertiesConfiguration config = configFor(prop(SSL_PRIVATE_KEY_CERT_FILE, userCertFile.toFile().getAbsolutePath()));
         assertThat(config.getPrivateKeyCertFile()).isEqualTo(userCertFile.toFile());
     }
 
     @Test
-    void shouldThrowTaskwarriorConfigurationExceptionForInvalidUserKey() throws Exception {
-        TaskwarriorPropertiesConfiguration config = configFor("taskwarrior.ssl.private.key.file=not-existing.key.pem");
+    void shouldThrowTaskwarriorConfigurationExceptionIfPrivateKeyIsMissing() throws Exception {
+        TaskwarriorPropertiesConfiguration config = configFor();
+        assertThatThrownBy(config::getPrivateKeyFile)
+                .isInstanceOf(TaskwarriorConfigurationException.class)
+                .hasMessageMatching(format("Could not find property with key '%s' in '.*/taskwarrior.properties'.", SSL_PRIVATE_KEY_FILE.key));
+    }
+
+    @Test
+    void shouldThrowTaskwarriorConfigurationExceptionForInvalidPrivateKey() throws Exception {
+        TaskwarriorPropertiesConfiguration config = configFor(prop(SSL_PRIVATE_KEY_FILE, "not-existing.key.pem"));
         assertThatThrownBy(config::getPrivateKeyFile)
                 .isInstanceOf(TaskwarriorConfigurationException.class)
                 .hasMessage("Private key file 'not-existing.key.pem' does not exist.");
     }
 
     @Test
-    void shouldSuccessfullyParseValidUserKey() throws Exception {
+    void shouldSuccessfullyParseValidPrivateKey() throws Exception {
         Path userKeyFile = Files.createFile(tempDir.resolve("user.key.pem"));
-        TaskwarriorPropertiesConfiguration config = configFor("taskwarrior.ssl.private.key.file=" + userKeyFile.toAbsolutePath());
+        TaskwarriorPropertiesConfiguration config = configFor(prop(SSL_PRIVATE_KEY_FILE, userKeyFile.toFile().getAbsolutePath()));
         assertThat(config.getPrivateKeyFile()).isEqualTo(userKeyFile.toFile());
     }
 
     @Test
-    void shouldThrowTaskwarriorConfigurationExceptionForInvalidAuthenticationKey() throws Exception {
-        TaskwarriorPropertiesConfiguration config = configFor(
-                "taskwarrior.auth.organisation=Org",
-                "taskwarrior.auth.key=invalid",
-                "taskwarrior.auth.user=User"
-        );
-        assertThatThrownBy(config::getAuthentication)
+    void shouldThrowTaskwarriorConfigurationExceptionIfAuthenticationKeyIsMissing() throws Exception {
+        TaskwarriorPropertiesConfiguration config = configFor();
+        assertThatThrownBy(config::getAuthKey)
                 .isInstanceOf(TaskwarriorConfigurationException.class)
-                .hasMessage("Authentication key 'invalid' is not a parsable UUID.");
+                .hasMessageMatching(format("Could not find property with key '%s' in '.*/taskwarrior.properties'.", AUTH_KEY.key));
     }
 
     @Test
-    void shouldSuccessfullyParseValidAuthentication() throws Exception {
-        TaskwarriorPropertiesConfiguration config = configFor(
-                "taskwarrior.auth.organisation=Org",
-                "taskwarrior.auth.key=12c98b25-9234-4a7d-824a-531f603b12fa",
-                "taskwarrior.auth.user=User"
-        );
+    void shouldSuccessfullyParseAuthenticationKey() throws Exception {
+        UUID uuid = UUID.randomUUID();
+        TaskwarriorPropertiesConfiguration config = configFor(prop(AUTH_KEY, uuid.toString()));
+        assertThat(config.getAuthKey()).isEqualTo(uuid);
+    }
 
-        assertThat(config.getAuthentication().getOrganisation()).isEqualTo("Org");
-        assertThat(config.getAuthentication().getKey()).isEqualTo(UUID.fromString("12c98b25-9234-4a7d-824a-531f603b12fa"));
-        assertThat(config.getAuthentication().getUser()).isEqualTo("User");
+    @Test
+    void shouldThrowTaskwarriorConfigurationExceptionIfOrganizationIsMissing() throws Exception {
+        TaskwarriorPropertiesConfiguration config = configFor();
+        assertThatThrownBy(config::getOrganization)
+                .isInstanceOf(TaskwarriorConfigurationException.class)
+                .hasMessageMatching(format("Could not find property with key '%s' in '.*/taskwarrior.properties'.", ORGANIZATION.key));
+    }
+
+    @Test
+    void shouldSuccessfullyReturnOrganisation() throws Exception {
+        TaskwarriorPropertiesConfiguration config = configFor(prop(ORGANIZATION, "org") );
+        assertThat(config.getOrganization()).isEqualTo("org");
+    }
+
+    @Test
+    void shouldThrowTaskwarriorConfigurationExceptionIfUserIsMissing() throws Exception {
+        TaskwarriorPropertiesConfiguration config = configFor();
+        assertThatThrownBy(config::getUser)
+                .isInstanceOf(TaskwarriorConfigurationException.class)
+                .hasMessageMatching(format("Could not find property with key '%s' in '.*/taskwarrior.properties'.", USER.key));
+    }
+
+    @Test
+    void shouldSuccessfullyReturnUser() throws Exception {
+        TaskwarriorPropertiesConfiguration config = configFor(prop(USER, "user") );
+        assertThat(config.getUser()).isEqualTo("user");
     }
 
     private TaskwarriorPropertiesConfiguration configFor(String... lines) throws Exception {
         Path properties = Files.createFile(tempDir.resolve("taskwarrior.properties"));
         Files.write(properties, Arrays.asList(lines));
         return new TaskwarriorPropertiesConfiguration(properties.toUri().toURL());
+    }
+
+    private String prop(PropertyKey propertyKey, String value) {
+        return format("%s=%s", propertyKey.key, value);
     }
 }

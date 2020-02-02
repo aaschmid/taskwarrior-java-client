@@ -1,24 +1,14 @@
 package de.aaschmid.taskwarrior.config;
 
-import java.io.File;
-import java.net.InetAddress;
 import java.net.URL;
 
-public interface TaskwarriorConfiguration {
+import de.aaschmid.taskwarrior.ssl.TaskwarriorSslKeys;
+import de.aaschmid.taskwarrior.ssl.TaskwarriorServerLocation;
+import de.aaschmid.taskwarrior.message.TaskwarriorAuthentication;
+
+public interface TaskwarriorConfiguration extends TaskwarriorServerLocation, TaskwarriorSslKeys, TaskwarriorAuthentication {
 
     static TaskwarriorPropertiesConfiguration taskwarriorPropertiesConfiguration(URL propertiesUrl) {
         return new TaskwarriorPropertiesConfiguration(propertiesUrl);
     }
-
-    File getCaCertFile();
-
-    File getPrivateKeyCertFile();
-
-    File getPrivateKeyFile();
-
-    InetAddress getServerHost();
-
-    int getServerPort();
-
-    TaskwarriorAuthentication getAuthentication();
 }

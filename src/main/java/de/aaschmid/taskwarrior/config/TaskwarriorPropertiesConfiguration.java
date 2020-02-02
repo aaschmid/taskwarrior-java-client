@@ -8,7 +8,14 @@ import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.UUID;
 
-import static de.aaschmid.taskwarrior.config.TaskwarriorAuthentication.taskwarriorAuthentication;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.AUTH_KEY;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.ORGANIZATION;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.USER;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SERVER_HOST;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SERVER_PORT;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SSL_CERT_CA_FILE;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SSL_PRIVATE_KEY_CERT_FILE;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SSL_PRIVATE_KEY_FILE;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -16,19 +23,29 @@ import static java.util.Objects.requireNonNull;
  */
 class TaskwarriorPropertiesConfiguration implements TaskwarriorConfiguration {
 
-    private static final String PROPERTY_TASKWARRIOR_SSL_CERT_CA_FILE = "taskwarrior.ssl.cert.ca.file";
-    private static final String PROPERTY_TASKWARRIOR_SSL_CERT_KEY_FILE = "taskwarrior.ssl.cert.key.file";
-    private static final String PROPERTY_TASKWARRIOR_SSL_PUBLIC_KEY_FILE = "taskwarrior.ssl.private.key.file";
-    private static final String PROPERTY_TASKWARRIOR_SERVER_HOST = "taskwarrior.server.host";
-    private static final String PROPERTY_TASKWARRIOR_SERVER_PORT = "taskwarrior.server.port";
-    private static final String PROPERTY_TASKWARRIOR_AUTH_KEY = "taskwarrior.auth.key";
-    private static final String PROPERTY_TASKWARRIOR_AUTH_USER = "taskwarrior.auth.user";
-    private static final String PROPERTY_TASKWARRIOR_AUTH_ORGANISATION = "taskwarrior.auth.organisation";
+    enum PropertyKey {
+        AUTH_KEY("taskwarrior.auth.key"),
+        ORGANIZATION("taskwarrior.auth.organisation"),
+        USER("taskwarrior.auth.user"),
+
+        SERVER_HOST("taskwarrior.server.host"),
+        SERVER_PORT("taskwarrior.server.port"),
+
+        SSL_CERT_CA_FILE("taskwarrior.ssl.cert.ca.file"),
+        SSL_PRIVATE_KEY_CERT_FILE("taskwarrior.ssl.cert.key.file"),
+        SSL_PRIVATE_KEY_FILE("taskwarrior.ssl.private.key.file");
+
+        public final String key;
+
+        PropertyKey(String key) {
+            this.key = key;
+        }
+    }
 
     private final URL propertiesUrl;
     private final Properties taskwarriorProperties;
 
-    public TaskwarriorPropertiesConfiguration(URL propertiesUrl) {
+    TaskwarriorPropertiesConfiguration(URL propertiesUrl) {
         this.propertiesUrl = requireNonNull(propertiesUrl, "'propertiesUrl' must not be null.");
 
         this.taskwarriorProperties = new Properties();
@@ -41,22 +58,22 @@ class TaskwarriorPropertiesConfiguration implements TaskwarriorConfiguration {
 
     @Override
     public File getCaCertFile() {
-        return getExistingFileFromProperty(PROPERTY_TASKWARRIOR_SSL_CERT_CA_FILE, "CA certificate");
+        return getExistingFileFromProperty(SSL_CERT_CA_FILE.key, "CA certificate");
     }
 
     @Override
     public File getPrivateKeyCertFile() {
-        return getExistingFileFromProperty(PROPERTY_TASKWARRIOR_SSL_CERT_KEY_FILE, "Private key certificate");
+        return getExistingFileFromProperty(SSL_PRIVATE_KEY_CERT_FILE.key, "Private key certificate");
     }
 
     @Override
     public File getPrivateKeyFile() {
-        return getExistingFileFromProperty(PROPERTY_TASKWARRIOR_SSL_PUBLIC_KEY_FILE, "Private key");
+        return getExistingFileFromProperty(SSL_PRIVATE_KEY_FILE.key, "Private key");
     }
 
     @Override
     public InetAddress getServerHost() {
-        String host = getExistingProperty(PROPERTY_TASKWARRIOR_SERVER_HOST);
+        String host = getExistingProperty(SERVER_HOST.key);
         try {
             return InetAddress.getByName(host);
         } catch (UnknownHostException e) {
@@ -66,7 +83,7 @@ class TaskwarriorPropertiesConfiguration implements TaskwarriorConfiguration {
 
     @Override
     public int getServerPort() {
-        String port = getExistingProperty(PROPERTY_TASKWARRIOR_SERVER_PORT);
+        String port = getExistingProperty(SERVER_PORT.key);
         try {
             return Integer.decode(port);
         } catch (NumberFormatException e) {
@@ -75,11 +92,23 @@ class TaskwarriorPropertiesConfiguration implements TaskwarriorConfiguration {
     }
 
     @Override
-    public TaskwarriorAuthentication getAuthentication() {
-        String org = getExistingProperty(PROPERTY_TASKWARRIOR_AUTH_ORGANISATION);
-        UUID key = getExistingAuthenticationKey();
-        String user = getExistingProperty(PROPERTY_TASKWARRIOR_AUTH_USER);
-        return taskwarriorAuthentication(org, key, user);
+    public String getOrganization() {
+        return getExistingProperty(ORGANIZATION.key);
+    }
+
+    @Override
+    public UUID getAuthKey() {
+        String key = getExistingProperty(AUTH_KEY.key);
+        try {
+            return UUID.fromString(key);
+        } catch (IllegalArgumentException e) {
+            throw new TaskwarriorConfigurationException(e, "Authentication key '%s' is not a parsable UUID.", key);
+        }
+    }
+
+    @Override
+    public String getUser() {
+        return getExistingProperty(USER.key);
     }
 
     private String getExistingProperty(String key) {
@@ -98,14 +127,5 @@ class TaskwarriorPropertiesConfiguration implements TaskwarriorConfiguration {
             throw new TaskwarriorConfigurationException("%s file '%s' does not exist.", fileErrorText, property);
         }
         return result;
-    }
-
-    private UUID getExistingAuthenticationKey() {
-        String key = getExistingProperty(TaskwarriorPropertiesConfiguration.PROPERTY_TASKWARRIOR_AUTH_KEY);
-        try {
-            return UUID.fromString(key);
-        } catch (IllegalArgumentException e) {
-            throw new TaskwarriorConfigurationException(e, "Authentication key '%s' is not a parsable UUID.", key);
-        }
     }
 }
