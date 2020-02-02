@@ -5,11 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.security.KeyStore;
 
 import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
-import de.aaschmid.taskwarrior.ssl.KeyStoreBuilder;
 import de.aaschmid.taskwarrior.ssl.SslContextFactory;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -24,15 +22,7 @@ public class TaskwarriorClient {
 
     public TaskwarriorClient(TaskwarriorConfiguration config) {
         this.config = requireNonNull(config, "'configuration' must not be null.");
-
-        // @formatter:off
-        KeyStore keyStore = new KeyStoreBuilder()
-                .withCaCertFile(config.getCaCertFile())
-                .withPrivateKeyCertFile(config.getPrivateKeyCertFile())
-                .withPrivateKeyFile(config.getPrivateKeyFile())
-                .build();
-        // @formatter:on
-        this.sslContext = SslContextFactory.getInstance(keyStore, KeyStoreBuilder.KEYSTORE_PASSWORD);
+        this.sslContext = SslContextFactory.createSslContext(config);
     }
 
     @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE", justification = "generated try-with-resources code causes failure in Java 11, see https://github.com/spotbugs/spotbugs/issues/756")

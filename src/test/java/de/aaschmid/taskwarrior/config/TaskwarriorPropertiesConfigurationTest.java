@@ -183,7 +183,7 @@ class TaskwarriorPropertiesConfigurationTest {
     }
 
     @Test
-    void shouldSuccessfullyReturnOrganisation() throws Exception {
+    void shouldSuccessfullyReturnOrganization() throws Exception {
         TaskwarriorPropertiesConfiguration config = configFor(prop(ORGANIZATION, "org") );
         assertThat(config.getOrganization()).isEqualTo("org");
     }

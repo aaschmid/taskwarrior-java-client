@@ -19,19 +19,16 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Objects.requireNonNull;
 
-public class KeyStoreBuilder {
-
-    public static final String KEYSTORE_PASSWORD = UUID.randomUUID().toString();
+class KeyStoreBuilder {
 
     private static final String TYPE_CERTIFICATE = "X.509";
     private static final String ALGORITHM_PRIVATE_KEY = "RSA";
 
-    private ProtectionParameter keyStoreProtection = new PasswordProtection(KEYSTORE_PASSWORD.toCharArray());
+    private ProtectionParameter keyStoreProtection;
     private File caCertFile;
     private File privateKeyCertFile;
     private File privateKeyFile;
@@ -39,6 +36,10 @@ public class KeyStoreBuilder {
     public KeyStoreBuilder withKeyStoreProtection(ProtectionParameter keyStoreProtection) {
         this.keyStoreProtection = requireNonNull(keyStoreProtection, "'keyStoreProtection' must not be null.");
         return this;
+    }
+
+    public KeyStoreBuilder withPasswordProtection(String password) {
+        return withKeyStoreProtection(new PasswordProtection(requireNonNull(password, "'password' must not be null.").toCharArray()));
     }
 
     public KeyStoreBuilder withCaCertFile(File caCertFile) {

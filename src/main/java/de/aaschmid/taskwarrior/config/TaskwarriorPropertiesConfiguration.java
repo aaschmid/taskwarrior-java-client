@@ -25,7 +25,7 @@ class TaskwarriorPropertiesConfiguration implements TaskwarriorConfiguration {
 
     enum PropertyKey {
         AUTH_KEY("taskwarrior.auth.key"),
-        ORGANIZATION("taskwarrior.auth.organisation"),
+        ORGANIZATION("taskwarrior.auth.organization"),
         USER("taskwarrior.auth.user"),
 
         SERVER_HOST("taskwarrior.server.host"),

@@ -38,6 +38,18 @@ class KeyStoreBuilderTest {
     }
 
     @Test
+    void withPasswordProtection_shouldThrowNullPointerExceptionOnNull() {
+        assertThatThrownBy(() -> keyStoreBuilder.withPasswordProtection(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("'password' must not be null.");
+    }
+
+    @Test
+    void withPasswordProtection_shouldNotThrowOnNonNull() {
+        assertThatCode(() -> keyStoreBuilder.withPasswordProtection("test")).doesNotThrowAnyException();
+    }
+
+    @Test
     void withCaCertFile_shouldThrowNullPointerExceptionOnNull() {
         assertThatThrownBy(() -> keyStoreBuilder.withCaCertFile(null))
                 .isInstanceOf(NullPointerException.class)
@@ -100,7 +112,7 @@ class KeyStoreBuilderTest {
     @Test
     void build_shouldThrowTaskwarriorKeyStoreExceptionIfCaCertificateIsInvalid() throws IOException {
         Path caCertFile = Files.write(tempDir.resolve("ca.cert.pem"), "invalid cert".getBytes(UTF_8));
-        KeyStoreBuilder builder = keyStoreBuilder.withCaCertFile(caCertFile.toFile());
+        KeyStoreBuilder builder = keyStoreBuilder.withPasswordProtection("test").withCaCertFile(caCertFile.toFile());
 
         assertThatThrownBy(builder::build)
                 .isInstanceOf(TaskwarriorKeyStoreException.class)
@@ -113,6 +125,7 @@ class KeyStoreBuilderTest {
         Path caCertFile = Files.createFile(tempDir.resolve("ca.cert.pem"));
         Path privateKeyCertFile = Files.write(Files.createFile(tempDir.resolve("key.cert.pem")), "invalid cert".getBytes(UTF_8));
         KeyStoreBuilder builder = keyStoreBuilder
+                .withPasswordProtection("test")
                 .withCaCertFile(caCertFile.toFile())
                 .withPrivateKeyCertFile(privateKeyCertFile.toFile());
 
@@ -128,6 +141,7 @@ class KeyStoreBuilderTest {
         Path privateKeyCertFile = Files.createFile(tempDir.resolve("key.cert.pem"));
         Path privateKeyFile = Files.write(Files.createFile(tempDir.resolve("key.der")), "invalid cert".getBytes(UTF_8));
         KeyStoreBuilder builder = keyStoreBuilder
+                .withPasswordProtection("test")
                 .withCaCertFile(caCertFile.toFile())
                 .withPrivateKeyCertFile(privateKeyCertFile.toFile())
                 .withPrivateKeyFile(privateKeyFile.toFile());

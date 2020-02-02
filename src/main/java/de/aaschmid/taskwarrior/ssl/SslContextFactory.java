@@ -10,6 +10,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
+import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 
@@ -17,10 +18,23 @@ public class SslContextFactory {
 
     private static final String DEFAULT_PROTOCOL = "TLS";
 
-    /**
-     * @param protocol see {@link SSLContext#getInstance(String)} for valid protocols
-     */
-    public static SSLContext getInstance(String protocol, KeyStore keyStore, String keyStorePassword) {
+    public static SSLContext createSslContext(TaskwarriorSslKeys sslKeys) {
+        requireNonNull(sslKeys, "'sslKeys' must not be null.");
+
+        String keystorePassword = UUID.randomUUID().toString();
+
+        KeyStore keyStore = new KeyStoreBuilder()
+                .withPasswordProtection(keystorePassword)
+                .withCaCertFile(sslKeys.getCaCertFile())
+                .withPrivateKeyCertFile(sslKeys.getPrivateKeyCertFile())
+                .withPrivateKeyFile(sslKeys.getPrivateKeyFile())
+                .build();
+
+        return createSslContext(DEFAULT_PROTOCOL, keyStore, keystorePassword);
+    }
+
+    /** @param protocol see {@link SSLContext#getInstance(String)} for valid protocols */
+    static SSLContext createSslContext(String protocol, KeyStore keyStore, String keyStorePassword) {
         requireNonNull(protocol, "'protocol' must not be null.");
         requireNonNull(keyStore, "'keyStore' must not be null.");
         requireNonNull(keyStorePassword, "'keyStorePassword' must not be null.");
@@ -39,8 +53,8 @@ public class SslContextFactory {
         return sslContext;
     }
 
-    public static SSLContext getInstance(KeyStore keyStore, String keyStorePassword) {
-        return getInstance(DEFAULT_PROTOCOL, keyStore, keyStorePassword);
+    static SSLContext createSslContext(KeyStore keyStore, String keyStorePassword) {
+        return createSslContext(DEFAULT_PROTOCOL, keyStore, keyStorePassword);
     }
 
     private static KeyManager[] loadKeyMaterial(KeyStore keystore, String keyStorePassword)
