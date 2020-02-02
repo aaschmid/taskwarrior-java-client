@@ -12,6 +12,7 @@ import java.security.spec.InvalidKeySpecException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -98,7 +99,7 @@ class KeyStoreBuilderTest {
 
     @Test
     void build_shouldThrowTaskwarriorKeyStoreExceptionIfCaCertificateIsInvalid() throws IOException {
-        Path caCertFile = Files.write(tempDir.resolve("ca.cert.pem"), "invalid cert".getBytes());
+        Path caCertFile = Files.write(tempDir.resolve("ca.cert.pem"), "invalid cert".getBytes(UTF_8));
         KeyStoreBuilder builder = keyStoreBuilder.withCaCertFile(caCertFile.toFile());
 
         assertThatThrownBy(builder::build)
@@ -110,7 +111,7 @@ class KeyStoreBuilderTest {
     @Test
     void build_shouldThrowTaskwarriorKeyStoreExceptionIfPrivateKeyCertificateIsInvalid() throws IOException {
         Path caCertFile = Files.createFile(tempDir.resolve("ca.cert.pem"));
-        Path privateKeyCertFile = Files.write(Files.createFile(tempDir.resolve("key.cert.pem")), "invalid cert".getBytes());
+        Path privateKeyCertFile = Files.write(Files.createFile(tempDir.resolve("key.cert.pem")), "invalid cert".getBytes(UTF_8));
         KeyStoreBuilder builder = keyStoreBuilder
                 .withCaCertFile(caCertFile.toFile())
                 .withPrivateKeyCertFile(privateKeyCertFile.toFile());
@@ -125,7 +126,7 @@ class KeyStoreBuilderTest {
     void build_shouldTaskwarriorKeyStoreExceptionIfPrivateKeyIsInvalid() throws IOException {
         Path caCertFile = Files.createFile(tempDir.resolve("ca.cert.pem"));
         Path privateKeyCertFile = Files.createFile(tempDir.resolve("key.cert.pem"));
-        Path privateKeyFile = Files.write(Files.createFile(tempDir.resolve("key.der")), "invalid cert".getBytes());
+        Path privateKeyFile = Files.write(Files.createFile(tempDir.resolve("key.der")), "invalid cert".getBytes(UTF_8));
         KeyStoreBuilder builder = keyStoreBuilder
                 .withCaCertFile(caCertFile.toFile())
                 .withPrivateKeyCertFile(privateKeyCertFile.toFile())

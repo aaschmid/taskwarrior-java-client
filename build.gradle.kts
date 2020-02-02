@@ -40,8 +40,10 @@ repositories {
 dependencies {
     annotationProcessor("org.immutables:value:2.8.3")
 
+    compileOnly("com.github.spotbugs:spotbugs-annotations:3.1.12")
     compileOnly("org.immutables:value-annotations:2.8.3")
 
+    testCompileOnly("com.github.spotbugs:spotbugs-annotations:3.1.12")
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
     testImplementation("org.assertj:assertj-core:3.14.0")
     testImplementation("org.mockito:mockito-junit-jupiter:3.2.4")
@@ -153,7 +155,6 @@ cpd {
 
 spotbugs {
     toolVersion = "3.1.12"
-    isIgnoreFailures = true
 }
 
 // -- publish and sign artifacts --------------------------------------------------------------------------------------

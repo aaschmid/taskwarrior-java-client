@@ -11,6 +11,7 @@ import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
 import de.aaschmid.taskwarrior.ssl.KeyStoreBuilder;
 import de.aaschmid.taskwarrior.ssl.SslContextFactory;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.deserialize;
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.serialize;
@@ -34,6 +35,7 @@ public class TaskwarriorClient {
         this.sslContext = SslContextFactory.getInstance(keyStore, KeyStoreBuilder.KEYSTORE_PASSWORD);
     }
 
+    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE", justification = "generated try-with-resources code causes failure in Java 11, see https://github.com/spotbugs/spotbugs/issues/756")
     public TaskwarriorMessage sendAndReceive(TaskwarriorMessage message) throws IOException {
         requireNonNull(message, "'message' must not be null.");
 

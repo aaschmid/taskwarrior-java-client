@@ -37,7 +37,7 @@ class TaskwarriorMessageFactoryTest {
         assertThat(actual)
                 .startsWith(0, 0, 0, actual.length)
                 .endsWith(String.format(
-                        "org: org\nuser: user\nkey: %s\nheader1: value1\nheader2: value2\n\nThis is the expected payload.",
+                        "org: org%nuser: user%nkey: %s%nheader1: value1%nheader2: value2%n%nThis is the expected payload.",
                         uuid).getBytes(StandardCharsets.UTF_8));
     }
 
