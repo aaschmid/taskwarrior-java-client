@@ -1,4 +1,4 @@
-package de.aaschmid.taskwarrior.message;
+package de.aaschmid.taskwarrior.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -10,12 +10,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import de.aaschmid.taskwarrior.message.MessageType;
+import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
+import de.aaschmid.taskwarrior.message.TaskwarriorMessageDeserializationException;
+import de.aaschmid.taskwarrior.message.TaskwarriorRequestHeader;
 import org.junit.jupiter.api.Test;
 
+import static de.aaschmid.taskwarrior.client.TaskwarriorMessageFactory.deserialize;
+import static de.aaschmid.taskwarrior.client.TaskwarriorMessageFactory.serialize;
 import static de.aaschmid.taskwarrior.message.TaskwarriorAuthentication.taskwarriorAuthentication;
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.taskwarriorMessage;
-import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.deserialize;
-import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.serialize;
 import static de.aaschmid.taskwarrior.message.TaskwarriorRequestHeader.taskwarriorRequestHeaderBuilder;
 import static java.lang.String.format;
 import static java.lang.String.join;

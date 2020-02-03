@@ -1,4 +1,4 @@
-package de.aaschmid.taskwarrior;
+package de.aaschmid.taskwarrior.client;
 
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
@@ -8,11 +8,10 @@ import java.net.Socket;
 
 import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
-import de.aaschmid.taskwarrior.ssl.SslContextFactory;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.deserialize;
-import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.serialize;
+import static de.aaschmid.taskwarrior.client.TaskwarriorMessageFactory.deserialize;
+import static de.aaschmid.taskwarrior.client.TaskwarriorMessageFactory.serialize;
 import static java.util.Objects.requireNonNull;
 
 public class TaskwarriorClient {
@@ -29,15 +28,19 @@ public class TaskwarriorClient {
     public TaskwarriorMessage sendAndReceive(TaskwarriorMessage message) throws IOException {
         requireNonNull(message, "'message' must not be null.");
 
-        try (Socket socket = sslContext.getSocketFactory().createSocket(config.getServerHost(), config.getServerPort());
-             OutputStream out = socket.getOutputStream();
-             InputStream in = socket.getInputStream()) {
-            send(message, out);
+        try (Socket socket = sslContext.getSocketFactory().createSocket(config.getServerHost(), config.getServerPort())) {
+            return sendAndReceive(socket, message);
+        }
+    }
+
+    private TaskwarriorMessage sendAndReceive(Socket socket, TaskwarriorMessage message) throws IOException {
+        try (OutputStream out = socket.getOutputStream(); InputStream in = socket.getInputStream()) {
+            send(out, message);
             return receive(in);
         }
     }
 
-    private void send(TaskwarriorMessage message, OutputStream out) throws IOException {
+    private void send(OutputStream out, TaskwarriorMessage message) throws IOException {
         out.write(serialize(message));
         out.flush();
     }

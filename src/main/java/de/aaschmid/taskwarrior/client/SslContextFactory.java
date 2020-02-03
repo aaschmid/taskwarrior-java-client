@@ -1,4 +1,4 @@
-package de.aaschmid.taskwarrior.ssl;
+package de.aaschmid.taskwarrior.client;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -14,11 +14,11 @@ import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 
-public class SslContextFactory {
+class SslContextFactory {
 
     private static final String DEFAULT_PROTOCOL = "TLS";
 
-    public static SSLContext createSslContext(TaskwarriorSslKeys sslKeys) {
+    static SSLContext createSslContext(TaskwarriorSslKeys sslKeys) {
         requireNonNull(sslKeys, "'sslKeys' must not be null.");
 
         String keystorePassword = UUID.randomUUID().toString();
@@ -51,10 +51,6 @@ public class SslContextFactory {
             throw new TaskwarriorSslContextException(e, "Could not init ssl context: %s", e.getMessage());
         }
         return sslContext;
-    }
-
-    static SSLContext createSslContext(KeyStore keyStore, String keyStorePassword) {
-        return createSslContext(DEFAULT_PROTOCOL, keyStore, keyStorePassword);
     }
 
     private static KeyManager[] loadKeyMaterial(KeyStore keystore, String keyStorePassword)

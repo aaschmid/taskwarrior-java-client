@@ -1,4 +1,4 @@
-package de.aaschmid.taskwarrior.message;
+package de.aaschmid.taskwarrior.client;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,16 +13,19 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
+import de.aaschmid.taskwarrior.message.TaskwarriorMessageDeserializationException;
+
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.taskwarriorMessage;
 
-public class TaskwarriorMessageFactory {
+class TaskwarriorMessageFactory {
 
     private static final Charset CHARSET_TRANSFER_MESSAGE = StandardCharsets.UTF_8;
 
     private static final String SEPARATOR_HEADER_NAME_VALUE = ": ";
     private static final Pattern PATTERN_HEADER_LINE = Pattern.compile("^(.+?)" + SEPARATOR_HEADER_NAME_VALUE + "(.+)$");
 
-    public static byte[] serialize(TaskwarriorMessage message) {
+    static byte[] serialize(TaskwarriorMessage message) {
         String messageData = Stream.concat(Stream.of(message.getHeaders())
                 .map(Map::entrySet)
                 .flatMap(Set::stream)
@@ -32,7 +35,7 @@ public class TaskwarriorMessageFactory {
         return addFourByteBigEndianBinaryByteCountMessageLengthPrefix(bytes);
     }
 
-    public static TaskwarriorMessage deserialize(InputStream in) throws IOException {
+    static TaskwarriorMessage deserialize(InputStream in) throws IOException {
         int messageLength = receiveRemainingMessageLengthFromFourByteBigEndianBinaryByteCountPrefix(in);
         byte[] data = readMessageAsByteArray(in, messageLength);
         return parseResponse(new String(data, CHARSET_TRANSFER_MESSAGE));

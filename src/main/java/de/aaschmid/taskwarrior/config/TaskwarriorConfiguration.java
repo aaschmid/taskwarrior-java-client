@@ -2,9 +2,9 @@ package de.aaschmid.taskwarrior.config;
 
 import java.net.URL;
 
+import de.aaschmid.taskwarrior.client.TaskwarriorServerLocation;
+import de.aaschmid.taskwarrior.client.TaskwarriorSslKeys;
 import de.aaschmid.taskwarrior.message.TaskwarriorAuthentication;
-import de.aaschmid.taskwarrior.ssl.TaskwarriorServerLocation;
-import de.aaschmid.taskwarrior.ssl.TaskwarriorSslKeys;
 
 public interface TaskwarriorConfiguration extends TaskwarriorServerLocation, TaskwarriorSslKeys, TaskwarriorAuthentication {
 

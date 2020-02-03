@@ -3,6 +3,7 @@ package de.aaschmid.taskwarrior;
 import java.io.IOException;
 import java.net.URL;
 
+import de.aaschmid.taskwarrior.client.TaskwarriorClient;
 import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
 import de.aaschmid.taskwarrior.message.MessageType;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;

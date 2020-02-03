@@ -1,4 +1,4 @@
-package de.aaschmid.taskwarrior.ssl;
+package de.aaschmid.taskwarrior.client;
 
 import javax.net.ssl.SSLContext;
 

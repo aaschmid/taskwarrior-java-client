@@ -1,4 +1,4 @@
-package de.aaschmid.taskwarrior.ssl;
+package de.aaschmid.taskwarrior.client;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -33,16 +33,16 @@ class KeyStoreBuilder {
     private File privateKeyCertFile;
     private File privateKeyFile;
 
-    public KeyStoreBuilder withKeyStoreProtection(ProtectionParameter keyStoreProtection) {
+    KeyStoreBuilder withKeyStoreProtection(ProtectionParameter keyStoreProtection) {
         this.keyStoreProtection = requireNonNull(keyStoreProtection, "'keyStoreProtection' must not be null.");
         return this;
     }
 
-    public KeyStoreBuilder withPasswordProtection(String password) {
+    KeyStoreBuilder withPasswordProtection(String password) {
         return withKeyStoreProtection(new PasswordProtection(requireNonNull(password, "'password' must not be null.").toCharArray()));
     }
 
-    public KeyStoreBuilder withCaCertFile(File caCertFile) {
+    KeyStoreBuilder withCaCertFile(File caCertFile) {
         requireNonNull(caCertFile, "'caCertFile' must not be null.");
         if (!caCertFile.exists()) {
             throw new IllegalArgumentException(String.format("CA certificate '%s' does not exist.", caCertFile));
@@ -51,7 +51,7 @@ class KeyStoreBuilder {
         return this;
     }
 
-    public KeyStoreBuilder withPrivateKeyCertFile(File privateKeyCertFile) {
+    KeyStoreBuilder withPrivateKeyCertFile(File privateKeyCertFile) {
         requireNonNull(privateKeyCertFile, "'privateKeyCertFile' must not be null.");
         if (!privateKeyCertFile.exists()) {
             throw new IllegalArgumentException(String.format("Private key certificate '%s' does not exist.", privateKeyCertFile));
@@ -71,7 +71,7 @@ class KeyStoreBuilder {
      * @param privateKeyFile private key file in {@code *.DER} format (must not be {@code null}
      * @return the {@link KeyStore} builder itself
      */
-    public KeyStoreBuilder withPrivateKeyFile(File privateKeyFile) {
+    KeyStoreBuilder withPrivateKeyFile(File privateKeyFile) {
         requireNonNull(privateKeyFile, "'privateKeyFile' must not be null.");
         if (!privateKeyFile.exists()) {
             throw new IllegalArgumentException(String.format("Private key '%s' does not exist.", privateKeyFile));
@@ -80,7 +80,7 @@ class KeyStoreBuilder {
         return this;
     }
 
-    public KeyStore build() {
+    KeyStore build() {
         KeyStore result;
         try {
             result = KeyStore.Builder.newInstance(KeyStore.getDefaultType(), null, keyStoreProtection).getKeyStore();

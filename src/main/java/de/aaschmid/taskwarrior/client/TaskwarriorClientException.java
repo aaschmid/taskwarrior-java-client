@@ -1,4 +1,6 @@
-package de.aaschmid.taskwarrior;
+package de.aaschmid.taskwarrior.client;
+
+import de.aaschmid.taskwarrior.TaskwarriorException;
 
 /**
  * Exception occurs if a problem within {@link TaskwarriorClient} occurs.
