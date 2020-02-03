@@ -1,6 +1,5 @@
 package de.aaschmid.taskwarrior;
 
-import java.io.IOException;
 import java.net.URL;
 
 import de.aaschmid.taskwarrior.client.TaskwarriorClient;
@@ -27,7 +26,7 @@ class TaskwarriorClientIntegrationTest {
     private final TaskwarriorClient client = new TaskwarriorClient(CONFIG);
 
     @IntegrationTest
-    void statistics() throws IOException {
+    void statistics() {
         TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder()
                 .authentication(CONFIG)
                 .type(MessageType.STATISTICS)
@@ -46,7 +45,7 @@ class TaskwarriorClientIntegrationTest {
     }
 
     @IntegrationTest
-    void syncWithoutSyncKey() throws IOException { // FIXME maybe get rid of ugly IOException
+    void syncWithoutSyncKey() {
         TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder()
                 .authentication(CONFIG)
                 .type(MessageType.SYNC)
@@ -64,7 +63,7 @@ class TaskwarriorClientIntegrationTest {
     }
 
     @IntegrationTest
-    void syncWithSyncKey() throws IOException {
+    void syncWithSyncKey() {
         TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder()
                 .authentication(CONFIG)
                 .type(MessageType.SYNC)

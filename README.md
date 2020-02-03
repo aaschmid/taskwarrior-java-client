@@ -68,7 +68,7 @@ class Taskwarrior {
 
     private static final URL PROPERTIES_TASKWARRIOR = Taskwarrior.class.getResource("/taskwarrior.properties");
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         if (PROPERTIES_TASKWARRIOR == null) {
             throw new IllegalStateException(
                     "No 'taskwarrior.properties' found on Classpath. Create it by copy and rename 'taskwarrior.properties.template'. Also fill in proper values.");

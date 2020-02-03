@@ -1,7 +1,6 @@
 package de.aaschmid.taskwarrior.client;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -98,7 +97,7 @@ class TaskwarriorMessageFactoryTest {
     }
 
     @Test
-    void deserialize_shouldReturnCorrectMessageWithoutPayload() throws IOException {
+    void deserialize_shouldReturnCorrectMessageWithoutPayload() {
         byte[] messageBytes = new byte[95];
         System.arraycopy(new byte[] { 0, 0, 0, 95 }, 0, messageBytes, 0, 4);
         byte[] message = join(
@@ -125,7 +124,7 @@ class TaskwarriorMessageFactoryTest {
     }
 
     @Test
-    void deserialize_shouldReturnCorrectMessageWithPayload() throws IOException {
+    void deserialize_shouldReturnCorrectMessageWithPayload() {
         byte[] messageBytes = new byte[124];
         System.arraycopy(new byte[] { 0, 0, 0, 124 }, 0, messageBytes, 0, 4);
         byte[] message = join(

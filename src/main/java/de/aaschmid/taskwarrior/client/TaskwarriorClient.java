@@ -25,27 +25,40 @@ public class TaskwarriorClient {
     }
 
     @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE", justification = "generated try-with-resources code causes failure in Java 11, see https://github.com/spotbugs/spotbugs/issues/756")
-    public TaskwarriorMessage sendAndReceive(TaskwarriorMessage message) throws IOException {
+    public TaskwarriorMessage sendAndReceive(TaskwarriorMessage message) {
         requireNonNull(message, "'message' must not be null.");
 
         try (Socket socket = sslContext.getSocketFactory().createSocket(config.getServerHost(), config.getServerPort())) {
             return sendAndReceive(socket, message);
+        } catch (IOException e) {
+            throw new TaskwarriorClientException(
+                    e,
+                    "Could not create socket connection to '%s:%d'.",
+                    config.getServerHost().getCanonicalHostName(),
+                    config.getServerPort());
         }
     }
 
-    private TaskwarriorMessage sendAndReceive(Socket socket, TaskwarriorMessage message) throws IOException {
+    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE", justification = "generated try-with-resources code causes failure in Java 11, see https://github.com/spotbugs/spotbugs/issues/756")
+    private TaskwarriorMessage sendAndReceive(Socket socket, TaskwarriorMessage message) {
         try (OutputStream out = socket.getOutputStream(); InputStream in = socket.getInputStream()) {
             send(out, message);
             return receive(in);
+        } catch (IOException e) {
+            throw new TaskwarriorClientException("Could not open input and/or output stream of socket.", e);
         }
     }
 
-    private void send(OutputStream out, TaskwarriorMessage message) throws IOException {
-        out.write(serialize(message));
-        out.flush();
+    private void send(OutputStream out, TaskwarriorMessage message) {
+        try {
+            out.write(serialize(message));
+            out.flush();
+        } catch (IOException e) {
+            throw new TaskwarriorClientException("Could not write and flush serialized message to output stream of socket.", e);
+        }
     }
 
-    private TaskwarriorMessage receive(InputStream in) throws IOException {
+    private TaskwarriorMessage receive(InputStream in) {
         return deserialize(in);
     }
 }

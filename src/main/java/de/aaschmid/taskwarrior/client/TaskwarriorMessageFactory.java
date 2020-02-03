@@ -35,39 +35,47 @@ class TaskwarriorMessageFactory {
         return addFourByteBigEndianBinaryByteCountMessageLengthPrefix(bytes);
     }
 
-    static TaskwarriorMessage deserialize(InputStream in) throws IOException {
+    static TaskwarriorMessage deserialize(InputStream in) {
         int messageLength = receiveRemainingMessageLengthFromFourByteBigEndianBinaryByteCountPrefix(in);
         byte[] data = readMessageAsByteArray(in, messageLength);
         return parseResponse(new String(data, CHARSET_TRANSFER_MESSAGE));
     }
 
-    private static int receiveRemainingMessageLengthFromFourByteBigEndianBinaryByteCountPrefix(InputStream in) throws IOException {
+    private static int receiveRemainingMessageLengthFromFourByteBigEndianBinaryByteCountPrefix(InputStream in) {
         byte[] sizeBytes = new byte[4];
-        int length = in.read(sizeBytes);
-        if (length != 4) {
-            throw new TaskwarriorMessageDeserializationException(
-                    "Encoded message length incomplete. Expected at least 4 bytes but only %d are available.",
-                    length);
+        try {
+            int length = in.read(sizeBytes);
+            if (length != 4) {
+                throw new TaskwarriorMessageDeserializationException(
+                        "Encoded message length incomplete. Expected at least 4 bytes but only %d are available.",
+                        length);
+            }
+        } catch (IOException e) {
+            throw new TaskwarriorMessageDeserializationException("Could not read 4-byte, big-endian, binary byte count.", e);
         }
         return ((sizeBytes[0] << 24) | (sizeBytes[1] << 16) | (sizeBytes[2] << 8) | sizeBytes[3]) - 4;
     }
 
-    private static byte[] readMessageAsByteArray(InputStream in, int messageLength) throws IOException {
+    private static byte[] readMessageAsByteArray(InputStream in, int messageLength) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         int readCount;
         int remaining = messageLength;
         byte[] buffer = new byte[1024];
-        while ((readCount = in.read(buffer)) != -1) {
-            out.write(buffer, 0, readCount);
-            remaining -= readCount;
-        }
+        try {
+            while ((readCount = in.read(buffer)) != -1) {
+                out.write(buffer, 0, readCount);
+                remaining -= readCount;
+            }
 
-        if (remaining > 0) {
-            throw new TaskwarriorMessageDeserializationException("Could not retrieve complete message. Missing %d bytes.", remaining);
-        }
+            if (remaining > 0) {
+                throw new TaskwarriorMessageDeserializationException("Could not retrieve complete message. Missing %d bytes.", remaining);
+            }
 
-        out.flush();
+            out.flush();
+        } catch (IOException e) {
+            throw new TaskwarriorMessageDeserializationException("Could not bytes of the message according to calculated length.", e);
+        }
         return out.toByteArray();
     }
 
