@@ -1,5 +1,7 @@
 package de.aaschmid.taskwarrior;
 
+import static java.lang.String.format;
+
 /**
  * Exception occurs if any taskwarrior problem occurs.
  */
@@ -12,7 +14,7 @@ public class TaskwarriorException extends RuntimeException {
     }
 
     public TaskwarriorException(Throwable cause, String format, Object... args) {
-        this(cause, String.format(format, args));
+        this(cause, format(format, args));
     }
 
     public TaskwarriorException(String message) {
@@ -20,6 +22,6 @@ public class TaskwarriorException extends RuntimeException {
     }
 
     public TaskwarriorException(String format, Object... args) {
-        this(String.format(format, args));
+        this(format(format, args));
     }
 }

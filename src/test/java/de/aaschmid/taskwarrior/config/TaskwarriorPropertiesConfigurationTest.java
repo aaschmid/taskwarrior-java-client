@@ -124,7 +124,9 @@ class TaskwarriorPropertiesConfigurationTest {
         TaskwarriorPropertiesConfiguration config = configFor();
         assertThatThrownBy(config::getPrivateKeyCertFile)
                 .isInstanceOf(TaskwarriorConfigurationException.class)
-                .hasMessageMatching(format("Could not find property with key '%s' in '.*/taskwarrior.properties'.", SSL_PRIVATE_KEY_CERT_FILE.key));
+                .hasMessageMatching(format(
+                        "Could not find property with key '%s' in '.*/taskwarrior.properties'.",
+                        SSL_PRIVATE_KEY_CERT_FILE.key));
     }
 
     @Test
@@ -147,7 +149,9 @@ class TaskwarriorPropertiesConfigurationTest {
         TaskwarriorPropertiesConfiguration config = configFor();
         assertThatThrownBy(config::getPrivateKeyFile)
                 .isInstanceOf(TaskwarriorConfigurationException.class)
-                .hasMessageMatching(format("Could not find property with key '%s' in '.*/taskwarrior.properties'.", SSL_PRIVATE_KEY_FILE.key));
+                .hasMessageMatching(format(
+                        "Could not find property with key '%s' in '.*/taskwarrior.properties'.",
+                        SSL_PRIVATE_KEY_FILE.key));
     }
 
     @Test
