@@ -2,23 +2,13 @@ package de.aaschmid.taskwarrior.client;
 
 import de.aaschmid.taskwarrior.TaskwarriorException;
 
-/**
- * Exception occurs if a problem within {@link TaskwarriorClient} occurs.
- */
+/** Exception occurs if a problem within {@link TaskwarriorClient} occurs. */
 public class TaskwarriorClientException extends TaskwarriorException {
 
-    private static final long serialVersionUID = 1L;
-
-    public TaskwarriorClientException(Throwable cause, String message) {
-        super(message, cause);
-    }
+    private static final long serialVersionUID = -1523127582255643797L;
 
     public TaskwarriorClientException(Throwable cause, String format, Object... args) {
         super(cause, format, args);
-    }
-
-    public TaskwarriorClientException(String message) {
-        super(message);
     }
 
     public TaskwarriorClientException(String format, Object... args) {

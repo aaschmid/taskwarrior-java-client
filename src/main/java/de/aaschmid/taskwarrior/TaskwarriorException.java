@@ -2,12 +2,10 @@ package de.aaschmid.taskwarrior;
 
 import static java.lang.String.format;
 
-/**
- * Exception occurs if any taskwarrior problem occurs.
- */
-public class TaskwarriorException extends RuntimeException {
+/** Abstract super exception occurs if any taskwarrior problem occurs. */
+public abstract class TaskwarriorException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -2210198296753884433L;
 
     public TaskwarriorException(Throwable cause, String message) {
         super(message, cause);
