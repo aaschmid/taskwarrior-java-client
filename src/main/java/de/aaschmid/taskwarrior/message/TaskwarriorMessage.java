@@ -10,10 +10,6 @@ import org.immutables.value.Value;
 @HiddenImplementationStyle
 public interface TaskwarriorMessage {
 
-    String HEADER_TYPE = "type";
-    String HEADER_PROTOCOL = "protocol";
-    String HEADER_CLIENT = "client";
-
     static TaskwarriorMessage taskwarriorMessage(Map<String, String> headers, String payload) {
         return new TaskwarriorMessageBuilder().headers(headers).payload(payload).build();
     }

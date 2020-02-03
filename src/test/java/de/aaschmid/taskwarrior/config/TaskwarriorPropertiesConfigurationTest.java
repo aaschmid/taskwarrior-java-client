@@ -12,8 +12,14 @@ import de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.Propert
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.*;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.AUTH_KEY;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.ORGANIZATION;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SERVER_HOST;
 import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SERVER_PORT;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SSL_CERT_CA_FILE;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SSL_PRIVATE_KEY_CERT_FILE;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SSL_PRIVATE_KEY_FILE;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.USER;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -184,7 +190,7 @@ class TaskwarriorPropertiesConfigurationTest {
 
     @Test
     void shouldSuccessfullyReturnOrganization() throws Exception {
-        TaskwarriorPropertiesConfiguration config = configFor(prop(ORGANIZATION, "org") );
+        TaskwarriorPropertiesConfiguration config = configFor(prop(ORGANIZATION, "org"));
         assertThat(config.getOrganization()).isEqualTo("org");
     }
 
@@ -198,7 +204,7 @@ class TaskwarriorPropertiesConfigurationTest {
 
     @Test
     void shouldSuccessfullyReturnUser() throws Exception {
-        TaskwarriorPropertiesConfiguration config = configFor(prop(USER, "user") );
+        TaskwarriorPropertiesConfiguration config = configFor(prop(USER, "user"));
         assertThat(config.getUser()).isEqualTo("user");
     }
 

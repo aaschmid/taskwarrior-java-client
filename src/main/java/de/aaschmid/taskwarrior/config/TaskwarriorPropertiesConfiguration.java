@@ -10,12 +10,12 @@ import java.util.UUID;
 
 import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.AUTH_KEY;
 import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.ORGANIZATION;
-import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.USER;
 import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SERVER_HOST;
 import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SERVER_PORT;
 import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SSL_CERT_CA_FILE;
 import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SSL_PRIVATE_KEY_CERT_FILE;
 import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.SSL_PRIVATE_KEY_FILE;
+import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.USER;
 import static java.util.Objects.requireNonNull;
 
 /**

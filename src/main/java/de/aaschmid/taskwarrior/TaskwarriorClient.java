@@ -38,7 +38,7 @@ public class TaskwarriorClient {
     }
 
     private void send(TaskwarriorMessage message, OutputStream out) throws IOException {
-        out.write(serialize(config, message));
+        out.write(serialize(message));
         out.flush();
     }
 

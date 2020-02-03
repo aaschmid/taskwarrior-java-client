@@ -53,18 +53,16 @@ For example using it with [Java](https://www.java.com/):
 ```java
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import de.aaschmid.taskwarrior.TaskwarriorClient;
-import de.aaschmid.taskwarrior.message.ManifestHelper;
+import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
+import de.aaschmid.taskwarrior.message.MessageType;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
+import de.aaschmid.taskwarrior.message.TaskwarriorRequestHeader;
 
 import static de.aaschmid.taskwarrior.config.TaskwarriorConfiguration.taskwarriorPropertiesConfiguration;
-import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.HEADER_CLIENT;
-import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.HEADER_PROTOCOL;
-import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.HEADER_TYPE;
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.taskwarriorMessage;
+import static de.aaschmid.taskwarrior.message.TaskwarriorRequestHeader.taskwarriorRequestHeaderBuilder;
 
 class Taskwarrior {
 
@@ -75,15 +73,14 @@ class Taskwarrior {
             throw new IllegalStateException(
                     "No 'taskwarrior.properties' found on Classpath. Create it by copy and rename 'taskwarrior.properties.template'. Also fill in proper values.");
         }
+        TaskwarriorConfiguration config = taskwarriorPropertiesConfiguration(PROPERTIES_TASKWARRIOR);
 
-        TaskwarriorClient client = new TaskwarriorClient(taskwarriorPropertiesConfiguration(PROPERTIES_TASKWARRIOR));
+        TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder().authentication(config).type(MessageType.STATISTICS).build();
+        TaskwarriorMessage message = taskwarriorMessage(header.toMap());
 
-        Map<String, String> headers = new HashMap<>();
-        headers.put(HEADER_TYPE, "statistics");
-        headers.put(HEADER_PROTOCOL, "v1");
-        headers.put(HEADER_CLIENT, "taskwarrior-java-client " + ManifestHelper.getImplementationTitleAndVersionFromManifest("local-dev"));
+        TaskwarriorClient client = new TaskwarriorClient(config);
 
-        TaskwarriorMessage response = client.sendAndReceive(taskwarriorMessage(headers));
+        TaskwarriorMessage response = client.sendAndReceive(message);
         System.out.println(response);
     }
 }
@@ -91,7 +88,6 @@ class Taskwarrior {
 
 Used `taskwarrior.properties` can be created by copying and adjusting
 [`src/main/resources/taskwarrior.properties.template`](https://github.com/aaschmid/taskwarrior-java-client/tree/master/src/main/resources/taskwarrior.properties.template).
-
 
 
 Testing

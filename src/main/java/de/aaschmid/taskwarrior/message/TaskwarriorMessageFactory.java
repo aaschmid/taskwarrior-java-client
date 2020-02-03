@@ -22,8 +22,8 @@ public class TaskwarriorMessageFactory {
     private static final String SEPARATOR_HEADER_NAME_VALUE = ": ";
     private static final Pattern PATTERN_HEADER_LINE = Pattern.compile("^(.+?)" + SEPARATOR_HEADER_NAME_VALUE + "(.+)$");
 
-    public static byte[] serialize(TaskwarriorAuthentication auth, TaskwarriorMessage message) {
-        String messageData = Stream.concat(Stream.of(createHeadersFor(auth), message.getHeaders())
+    public static byte[] serialize(TaskwarriorMessage message) {
+        String messageData = Stream.concat(Stream.of(message.getHeaders())
                 .map(Map::entrySet)
                 .flatMap(Set::stream)
                 .map(e -> e.getKey() + SEPARATOR_HEADER_NAME_VALUE + e.getValue()), Stream.of("", message.getPayload().orElse("")))
@@ -79,14 +79,6 @@ public class TaskwarriorMessageFactory {
             return taskwarriorMessage(headers);
         }
         return taskwarriorMessage(headers, payload.trim());
-    }
-
-    private static Map<String, String> createHeadersFor(TaskwarriorAuthentication auth) {
-        Map<String, String> result = new HashMap<>();
-        result.put("org", auth.getOrganization());
-        result.put("user", auth.getUser());
-        result.put("key", auth.getAuthKey().toString());
-        return result;
     }
 
     private static byte[] addFourByteBigEndianBinaryByteCountMessageLengthPrefix(byte[] bytes) {

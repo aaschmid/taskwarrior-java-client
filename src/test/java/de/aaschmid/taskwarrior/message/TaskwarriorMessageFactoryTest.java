@@ -3,8 +3,8 @@ package de.aaschmid.taskwarrior.message;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +13,13 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import static de.aaschmid.taskwarrior.message.TaskwarriorAuthentication.taskwarriorAuthentication;
+import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.taskwarriorMessage;
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.deserialize;
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessageFactory.serialize;
+import static de.aaschmid.taskwarrior.message.TaskwarriorRequestHeader.taskwarriorRequestHeaderBuilder;
+import static java.lang.String.format;
+import static java.lang.String.join;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
@@ -25,36 +30,37 @@ class TaskwarriorMessageFactoryTest {
 
     @Test
     void serialize_shouldReturnCorrectBytesArray() {
-        TaskwarriorAuthentication auth = taskwarriorAuthentication(uuid, "org", "user");
-        Map<String, String> headers = new LinkedHashMap<>();
-        headers.put("header1", "value1");
-        headers.put("header2", "value2");
+        TaskwarriorRequestHeader taskwarriorRequestHeader = taskwarriorRequestHeaderBuilder()
+                .authentication(taskwarriorAuthentication(uuid, "org", "user"))
+                .type(MessageType.SYNC)
+                .client("test v0.9")
+                .build();
         String payload = "This is the expected payload.";
 
-        byte[] actual = serialize(auth, TaskwarriorMessage.taskwarriorMessage(headers, payload));
+        byte[] actual = serialize(taskwarriorMessage(taskwarriorRequestHeader.toMap(), payload));
 
+        System.out.println(new String(Arrays.copyOfRange(actual, 4, actual.length), UTF_8)); // FIXME deterministic order?
         assertThat(actual)
                 .startsWith(0, 0, 0, actual.length)
-                .endsWith(String.format(
-                        "org: org%nuser: user%nkey: %s%nheader1: value1%nheader2: value2%n%nThis is the expected payload.",
-                        uuid).getBytes(StandardCharsets.UTF_8));
+                .endsWith(format(
+                        "protocol: v1%norg: org%nclient: test v0.9%ntype: sync%nuser: user%nkey: %s%n%nThis is the expected payload.",
+                        uuid).getBytes(UTF_8));
     }
 
     @Test
     void serialize_shouldReturnCorrectMessageLengthInResultingBytesArray() {
-        TaskwarriorAuthentication auth = taskwarriorAuthentication(uuid, "org", "user");
         Map<String, String> headers = new LinkedHashMap<>();
         for (int i = 0; i < 100; i++) {
-            headers.put(String.format("h%03d", i), "val");
+            headers.put(format("h%03d", i), "val");
         }
         List<String> lines = new ArrayList<>();
         for (int i = 0; i <= 10_000; i++) {
-            lines.add(String.format("%099d", i));
+            lines.add(format("%099d", i));
         }
 
-        byte[] actual = serialize(auth, TaskwarriorMessage.taskwarriorMessage(headers, String.join("\n", lines)));
+        byte[] actual = serialize(taskwarriorMessage(headers, join("\n", lines)));
 
-        assertThat(actual).startsWith(0, 15, 70, 206); // 1_001_166 = 4 (length) + 1_000 (headers) + 62 (auth) + 1_000_100 (sep + content)
+        assertThat(actual).startsWith(0, 15, 70, 144); // 1_001_104 = 4 (length) + 1_000 (headers) + 1_000_100 (sep + content)
     }
 
     @Test
@@ -79,7 +85,7 @@ class TaskwarriorMessageFactoryTest {
     void deserialize_shouldThrowTaskwarriorMessageDeserializationExceptionIfHeaderEntryIsBroken() {
         byte[] messageBytes = new byte[95];
         System.arraycopy(new byte[] { 0, 0, 0, 95 }, 0, messageBytes, 0, 4);
-        byte[] message = String.join("\n", "invalid header value", "", "").getBytes(StandardCharsets.UTF_8);
+        byte[] message = join("\n", "invalid header value", "", "").getBytes(UTF_8);
         System.arraycopy(message, 0, messageBytes, 4, message.length);
 
         assertThatThrownBy(() -> deserialize(new ByteArrayInputStream(messageBytes)))
@@ -91,7 +97,7 @@ class TaskwarriorMessageFactoryTest {
     void deserialize_shouldReturnCorrectMessageWithoutPayload() throws IOException {
         byte[] messageBytes = new byte[95];
         System.arraycopy(new byte[] { 0, 0, 0, 95 }, 0, messageBytes, 0, 4);
-        byte[] message = String.join(
+        byte[] message = join(
                 "\n",
                 "org: org",
                 "user: user",
@@ -100,7 +106,7 @@ class TaskwarriorMessageFactoryTest {
                 "header2: val2",
                 "",
                 "" // TODO maybe get rid, that this line has to be present and the before one as well in parser!!!
-        ).getBytes(StandardCharsets.UTF_8);
+        ).getBytes(UTF_8);
         System.arraycopy(message, 0, messageBytes, 4, message.length);
 
         TaskwarriorMessage actual = deserialize(new ByteArrayInputStream(messageBytes));
@@ -118,7 +124,7 @@ class TaskwarriorMessageFactoryTest {
     void deserialize_shouldReturnCorrectMessageWithPayload() throws IOException {
         byte[] messageBytes = new byte[124];
         System.arraycopy(new byte[] { 0, 0, 0, 124 }, 0, messageBytes, 0, 4);
-        byte[] message = String.join(
+        byte[] message = join(
                 "\n",
                 "org: org",
                 "user: user",
@@ -127,7 +133,7 @@ class TaskwarriorMessageFactoryTest {
                 "header2: val2",
                 "",
                 "This is the expected payload."
-        ).getBytes(StandardCharsets.UTF_8);
+        ).getBytes(UTF_8);
         System.arraycopy(message, 0, messageBytes, 4, message.length);
 
         TaskwarriorMessage actual = deserialize(new ByteArrayInputStream(messageBytes));

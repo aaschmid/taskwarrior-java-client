@@ -7,11 +7,7 @@ import java.util.jar.Manifest;
 
 import static java.lang.String.format;
 
-public class ManifestHelper {
-
-    public static String getImplementationTitleAndVersionFromManifest(String fallback) {
-        return getImplementationTitleAndVersionFromManifest(ManifestHelper.class, fallback);
-    }
+class ManifestHelper {
 
     static String getImplementationTitleAndVersionFromManifest(Class<?> clazzFileInJar, String fallback) {
         return Optional.of(clazzFileInJar)

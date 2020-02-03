@@ -2,19 +2,16 @@ package de.aaschmid.taskwarrior;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
-import de.aaschmid.taskwarrior.message.ManifestHelper;
+import de.aaschmid.taskwarrior.message.MessageType;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
+import de.aaschmid.taskwarrior.message.TaskwarriorRequestHeader;
 import de.aaschmid.taskwarrior.test.IntegrationTest;
 
 import static de.aaschmid.taskwarrior.config.TaskwarriorConfiguration.taskwarriorPropertiesConfiguration;
-import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.HEADER_CLIENT;
-import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.HEADER_PROTOCOL;
-import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.HEADER_TYPE;
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.taskwarriorMessage;
+import static de.aaschmid.taskwarrior.message.TaskwarriorRequestHeader.taskwarriorRequestHeaderBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
@@ -22,7 +19,6 @@ class TaskwarriorClientIntegrationTest {
 
     private static final URL PROPERTIES_TASKWARRIOR =
             TaskwarriorClientIntegrationTest.class.getResource("/integTest.taskwarrior.properties");
-    private static final String IMPL_TITLE_AND_VERSION = ManifestHelper.getImplementationTitleAndVersionFromManifest("local-dev");
     private static final TaskwarriorConfiguration CONFIG = taskwarriorPropertiesConfiguration(PROPERTIES_TASKWARRIOR);
 
     private static final String SYNC_KEY = "f92d5c8d-4cf9-4cf5-b72f-1f4a70cf9b20";
@@ -31,12 +27,13 @@ class TaskwarriorClientIntegrationTest {
 
     @IntegrationTest
     void statistics() throws IOException {
-        Map<String, String> headers = new HashMap<>();
-        headers.put(HEADER_TYPE, "statistics");
-        headers.put(HEADER_PROTOCOL, "v1");
-        headers.put(HEADER_CLIENT, IMPL_TITLE_AND_VERSION);
+        TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder()
+                .authentication(CONFIG)
+                .type(MessageType.STATISTICS)
+                .build();
+        TaskwarriorMessage message = taskwarriorMessage(header.toMap());
 
-        TaskwarriorMessage response = client.sendAndReceive(taskwarriorMessage(headers));
+        TaskwarriorMessage response = client.sendAndReceive(message);
 
         assertThat(response.getHeaders())
                 .contains(entry("code", "200"))
@@ -49,12 +46,13 @@ class TaskwarriorClientIntegrationTest {
 
     @IntegrationTest
     void syncWithoutSyncKey() throws IOException { // FIXME maybe get rid of ugly IOException
-        Map<String, String> headers = new HashMap<>();
-        headers.put(HEADER_TYPE, "sync");
-        headers.put(HEADER_PROTOCOL, "v1");
-        headers.put(HEADER_CLIENT, IMPL_TITLE_AND_VERSION);
+        TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder()
+                .authentication(CONFIG)
+                .type(MessageType.SYNC)
+                .build();
+        TaskwarriorMessage message = taskwarriorMessage(header.toMap());
 
-        TaskwarriorMessage response = client.sendAndReceive(taskwarriorMessage(headers));
+        TaskwarriorMessage response = client.sendAndReceive(message);
 
         assertThat(response.getHeaders())
                 .contains(entry("code", "200"))
@@ -66,12 +64,13 @@ class TaskwarriorClientIntegrationTest {
 
     @IntegrationTest
     void syncWithSyncKey() throws IOException {
-        Map<String, String> headers = new HashMap<>();
-        headers.put(HEADER_TYPE, "sync");
-        headers.put(HEADER_PROTOCOL, "v1");
-        headers.put(HEADER_CLIENT, IMPL_TITLE_AND_VERSION);
+        TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder()
+                .authentication(CONFIG)
+                .type(MessageType.SYNC)
+                .build();
+        TaskwarriorMessage message = taskwarriorMessage(header.toMap(), SYNC_KEY);
 
-        TaskwarriorMessage response = client.sendAndReceive(taskwarriorMessage(headers, SYNC_KEY));
+        TaskwarriorMessage response = client.sendAndReceive(message);
 
         assertThat(response.getHeaders())
                 .contains(entry("code", "201"))
