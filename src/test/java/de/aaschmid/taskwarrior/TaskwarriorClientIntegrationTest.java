@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
-import de.aaschmid.taskwarrior.internal.ManifestHelper;
+import de.aaschmid.taskwarrior.message.ManifestHelper;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
 import de.aaschmid.taskwarrior.test.IntegrationTest;
 
@@ -22,7 +22,7 @@ class TaskwarriorClientIntegrationTest {
 
     private static final URL PROPERTIES_TASKWARRIOR =
             TaskwarriorClientIntegrationTest.class.getResource("/integTest.taskwarrior.properties");
-    private static final String IMPL_VERSION = ManifestHelper.getImplementationVersionFromManifest("local-dev");
+    private static final String IMPL_TITLE_AND_VERSION = ManifestHelper.getImplementationTitleAndVersionFromManifest("local-dev");
     private static final TaskwarriorConfiguration CONFIG = taskwarriorPropertiesConfiguration(PROPERTIES_TASKWARRIOR);
 
     private static final String SYNC_KEY = "f92d5c8d-4cf9-4cf5-b72f-1f4a70cf9b20";
@@ -34,7 +34,7 @@ class TaskwarriorClientIntegrationTest {
         Map<String, String> headers = new HashMap<>();
         headers.put(HEADER_TYPE, "statistics");
         headers.put(HEADER_PROTOCOL, "v1");
-        headers.put(HEADER_CLIENT, "taskwarrior-java-client " + IMPL_VERSION);
+        headers.put(HEADER_CLIENT, IMPL_TITLE_AND_VERSION);
 
         TaskwarriorMessage response = client.sendAndReceive(taskwarriorMessage(headers));
 
@@ -52,7 +52,7 @@ class TaskwarriorClientIntegrationTest {
         Map<String, String> headers = new HashMap<>();
         headers.put(HEADER_TYPE, "sync");
         headers.put(HEADER_PROTOCOL, "v1");
-        headers.put(HEADER_CLIENT, "taskwarrior-java-client " + IMPL_VERSION);
+        headers.put(HEADER_CLIENT, IMPL_TITLE_AND_VERSION);
 
         TaskwarriorMessage response = client.sendAndReceive(taskwarriorMessage(headers));
 
@@ -69,7 +69,7 @@ class TaskwarriorClientIntegrationTest {
         Map<String, String> headers = new HashMap<>();
         headers.put(HEADER_TYPE, "sync");
         headers.put(HEADER_PROTOCOL, "v1");
-        headers.put(HEADER_CLIENT, "taskwarrior-java-client " + IMPL_VERSION);
+        headers.put(HEADER_CLIENT, IMPL_TITLE_AND_VERSION);
 
         TaskwarriorMessage response = client.sendAndReceive(taskwarriorMessage(headers, SYNC_KEY));
 

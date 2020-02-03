@@ -57,12 +57,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.aaschmid.taskwarrior.TaskwarriorClient;
-import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
-import de.aaschmid.taskwarrior.internal.ManifestHelper;
+import de.aaschmid.taskwarrior.message.ManifestHelper;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
 
 import static de.aaschmid.taskwarrior.config.TaskwarriorConfiguration.taskwarriorPropertiesConfiguration;
-import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.*;
+import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.HEADER_CLIENT;
+import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.HEADER_PROTOCOL;
+import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.HEADER_TYPE;
+import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.taskwarriorMessage;
 
 class Taskwarrior {
 
@@ -79,7 +81,7 @@ class Taskwarrior {
         Map<String, String> headers = new HashMap<>();
         headers.put(HEADER_TYPE, "statistics");
         headers.put(HEADER_PROTOCOL, "v1");
-        headers.put(HEADER_CLIENT, "taskwarrior-java-client " + ManifestHelper.getImplementationVersionFromManifest("local-dev"));
+        headers.put(HEADER_CLIENT, "taskwarrior-java-client " + ManifestHelper.getImplementationTitleAndVersionFromManifest("local-dev"));
 
         TaskwarriorMessage response = client.sendAndReceive(taskwarriorMessage(headers));
         System.out.println(response);
