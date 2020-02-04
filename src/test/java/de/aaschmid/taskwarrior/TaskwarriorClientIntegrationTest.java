@@ -7,7 +7,6 @@ import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
 import de.aaschmid.taskwarrior.message.TaskwarriorRequestHeader;
 import de.aaschmid.taskwarrior.test.IntegrationTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -24,8 +23,7 @@ class TaskwarriorClientIntegrationTest {
     private static final String SYNC_KEY = "f92d5c8d-4cf9-4cf5-b72f-1f4a70cf9b20";
 
     static Stream<Arguments> configs() {
-        return Stream.of("pkcs8-der")
-//        return Stream.of("pkcs1", "pkcs8", "pkcs8-der") // TODO use to test all key type to be supported
+        return Stream.of("pkcs1", "pkcs8", "pkcs8-der")
                 .map(keyType -> format("/taskwarrior.%s.properties", keyType))
                 .map(TaskwarriorClientIntegrationTest.class::getResource)
                 .map(TaskwarriorConfiguration::taskwarriorPropertiesConfiguration)
