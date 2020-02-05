@@ -178,6 +178,14 @@ class TaskwarriorPropertiesConfigurationTest {
     }
 
     @Test
+    void shouldThrowTaskwarriorConfigurationExceptionIfAuthenticationKeyIsInvalid() throws Exception {
+        TaskwarriorPropertiesConfiguration config = configFor(prop(AUTH_KEY, "invalid"));
+        assertThatThrownBy(config::getAuthKey)
+                .isInstanceOf(TaskwarriorConfigurationException.class)
+                .hasMessageMatching("Authentication key 'invalid' is not a parsable UUID.");
+    }
+
+    @Test
     void shouldSuccessfullyParseAuthenticationKey() throws Exception {
         UUID uuid = UUID.randomUUID();
         TaskwarriorPropertiesConfiguration config = configFor(prop(AUTH_KEY, uuid.toString()));
