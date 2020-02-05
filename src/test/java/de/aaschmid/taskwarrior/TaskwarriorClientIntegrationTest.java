@@ -8,6 +8,7 @@ import de.aaschmid.taskwarrior.message.MessageType;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
 import de.aaschmid.taskwarrior.message.TaskwarriorRequestHeader;
 import de.aaschmid.taskwarrior.test.IntegrationTest;
+import org.junit.jupiter.api.Test;
 
 import static de.aaschmid.taskwarrior.config.TaskwarriorConfiguration.taskwarriorPropertiesConfiguration;
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.taskwarriorMessage;
@@ -15,6 +16,7 @@ import static de.aaschmid.taskwarrior.message.TaskwarriorRequestHeader.taskwarri
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
+@IntegrationTest
 class TaskwarriorClientIntegrationTest {
 
     private static final URL PROPERTIES_TASKWARRIOR =
@@ -25,7 +27,7 @@ class TaskwarriorClientIntegrationTest {
 
     private final TaskwarriorClient client = new TaskwarriorClient(CONFIG);
 
-    @IntegrationTest
+    @Test
     void statistics() {
         TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder()
                 .authentication(CONFIG)
@@ -44,7 +46,7 @@ class TaskwarriorClientIntegrationTest {
         assertThat(response.getPayload()).isNotPresent();
     }
 
-    @IntegrationTest
+    @Test
     void syncWithoutSyncKey() {
         TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder()
                 .authentication(CONFIG)
@@ -62,7 +64,7 @@ class TaskwarriorClientIntegrationTest {
                 .endsWith(SYNC_KEY));
     }
 
-    @IntegrationTest
+    @Test
     void syncWithSyncKey() {
         TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder()
                 .authentication(CONFIG)
