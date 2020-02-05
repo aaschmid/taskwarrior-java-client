@@ -4,7 +4,6 @@ import java.net.URL;
 
 import de.aaschmid.taskwarrior.client.TaskwarriorClient;
 import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
-import de.aaschmid.taskwarrior.message.MessageType;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
 import de.aaschmid.taskwarrior.message.TaskwarriorRequestHeader;
 import de.aaschmid.taskwarrior.test.IntegrationTest;
@@ -31,7 +30,7 @@ class TaskwarriorClientIntegrationTest {
     void statistics() {
         TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder()
                 .authentication(CONFIG)
-                .type(MessageType.STATISTICS)
+                .type(TaskwarriorRequestHeader.MessageType.STATISTICS)
                 .build();
         TaskwarriorMessage message = taskwarriorMessage(header.toMap());
 
@@ -50,7 +49,7 @@ class TaskwarriorClientIntegrationTest {
     void syncWithoutSyncKey() {
         TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder()
                 .authentication(CONFIG)
-                .type(MessageType.SYNC)
+                .type(TaskwarriorRequestHeader.MessageType.SYNC)
                 .build();
         TaskwarriorMessage message = taskwarriorMessage(header.toMap());
 
@@ -68,7 +67,7 @@ class TaskwarriorClientIntegrationTest {
     void syncWithSyncKey() {
         TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder()
                 .authentication(CONFIG)
-                .type(MessageType.SYNC)
+                .type(TaskwarriorRequestHeader.MessageType.SYNC)
                 .build();
         TaskwarriorMessage message = taskwarriorMessage(header.toMap(), SYNC_KEY);
 

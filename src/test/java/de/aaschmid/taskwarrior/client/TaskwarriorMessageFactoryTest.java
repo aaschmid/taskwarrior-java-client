@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import de.aaschmid.taskwarrior.message.MessageType;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessageDeserializationException;
 import de.aaschmid.taskwarrior.message.TaskwarriorRequestHeader;
@@ -35,7 +34,7 @@ class TaskwarriorMessageFactoryTest {
     void serialize_shouldReturnCorrectBytesArray() {
         TaskwarriorRequestHeader taskwarriorRequestHeader = taskwarriorRequestHeaderBuilder()
                 .authentication(taskwarriorAuthentication(uuid, "org", "user"))
-                .type(MessageType.SYNC)
+                .type(TaskwarriorRequestHeader.MessageType.SYNC)
                 .client("test v0.9")
                 .build();
         String payload = "This is the expected payload.";

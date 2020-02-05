@@ -6,7 +6,8 @@ import java.util.Map;
 import de.aaschmid.taskwarrior.util.immutables.HiddenImplementationStyle;
 import org.immutables.value.Value;
 
-import static de.aaschmid.taskwarrior.message.ManifestHelper.getImplementationTitleAndVersionFromManifest;
+import static de.aaschmid.taskwarrior.message.ManifestHelper.getAttributeValuesFromManifest;
+import static java.lang.String.join;
 
 /** Immutable request header of a taskwarrior message according to https://taskwarrior.org/docs/design/request.html#msgreq */
 @Value.Immutable
@@ -27,13 +28,24 @@ public interface TaskwarriorRequestHeader {
         return new Builder();
     }
 
+    enum MessageType {
+        STATISTICS("statistics"),
+        SYNC("sync");
+
+        public final String headerValue;
+
+        MessageType(String headerValue) {
+            this.headerValue = headerValue;
+        }
+    }
+
     TaskwarriorAuthentication getAuthentication();
 
     MessageType getType();
 
     @Value.Default
     default String getClient() {
-        return getImplementationTitleAndVersionFromManifest(this.getClass(), "taskwarrior-java-client");
+        return join(" ", getAttributeValuesFromManifest(this.getClass(), "Implementation-Title", "Implementation-Version"));
     }
 
     @Value.Default
