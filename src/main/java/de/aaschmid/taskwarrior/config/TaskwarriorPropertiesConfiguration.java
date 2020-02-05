@@ -18,10 +18,8 @@ import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.
 import static de.aaschmid.taskwarrior.config.TaskwarriorPropertiesConfiguration.PropertyKey.USER;
 import static java.util.Objects.requireNonNull;
 
-/**
- * {@link TaskwarriorConfiguration} based on a specified properties file
- */
-class TaskwarriorPropertiesConfiguration implements TaskwarriorConfiguration {
+/** {@link TaskwarriorConfiguration} based on a specified properties file */
+public class TaskwarriorPropertiesConfiguration implements TaskwarriorConfiguration {
 
     enum PropertyKey {
         AUTH_KEY("taskwarrior.auth.key"),

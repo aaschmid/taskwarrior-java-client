@@ -1,6 +1,6 @@
 package de.aaschmid.taskwarrior;
 
-import java.net.URL;
+import java.util.stream.Stream;
 
 import de.aaschmid.taskwarrior.client.TaskwarriorClient;
 import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
@@ -8,33 +8,40 @@ import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
 import de.aaschmid.taskwarrior.message.TaskwarriorRequestHeader;
 import de.aaschmid.taskwarrior.test.IntegrationTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static de.aaschmid.taskwarrior.config.TaskwarriorConfiguration.taskwarriorPropertiesConfiguration;
 import static de.aaschmid.taskwarrior.message.TaskwarriorMessage.taskwarriorMessage;
 import static de.aaschmid.taskwarrior.message.TaskwarriorRequestHeader.taskwarriorRequestHeaderBuilder;
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
 @IntegrationTest
 class TaskwarriorClientIntegrationTest {
 
-    private static final URL PROPERTIES_TASKWARRIOR =
-            TaskwarriorClientIntegrationTest.class.getResource("/integTest.taskwarrior.properties");
-    private static final TaskwarriorConfiguration CONFIG = taskwarriorPropertiesConfiguration(PROPERTIES_TASKWARRIOR);
-
     private static final String SYNC_KEY = "f92d5c8d-4cf9-4cf5-b72f-1f4a70cf9b20";
 
-    private final TaskwarriorClient client = new TaskwarriorClient(CONFIG);
+    static Stream<Arguments> configs() {
+        return Stream.of("pkcs8-der")
+//        return Stream.of("pkcs1", "pkcs8", "pkcs8-der") // TODO use to test all key type to be supported
+                .map(keyType -> format("/taskwarrior.%s.properties", keyType))
+                .map(TaskwarriorClientIntegrationTest.class::getResource)
+                .map(TaskwarriorConfiguration::taskwarriorPropertiesConfiguration)
+                .map(Arguments::of);
+    }
 
-    @Test
-    void statistics() {
+    @ParameterizedTest
+    @MethodSource("configs")
+    void statistics(TaskwarriorConfiguration config) {
         TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder()
-                .authentication(CONFIG)
+                .authentication(config)
                 .type(TaskwarriorRequestHeader.MessageType.STATISTICS)
                 .build();
         TaskwarriorMessage message = taskwarriorMessage(header.toMap());
 
-        TaskwarriorMessage response = client.sendAndReceive(message);
+        TaskwarriorMessage response = clientFor(config).sendAndReceive(message);
 
         assertThat(response.getHeaders())
                 .contains(entry("code", "200"))
@@ -45,15 +52,16 @@ class TaskwarriorClientIntegrationTest {
         assertThat(response.getPayload()).isNotPresent();
     }
 
-    @Test
-    void syncWithoutSyncKey() {
+    @ParameterizedTest
+    @MethodSource("configs")
+    void syncWithoutSyncKey(TaskwarriorConfiguration config) {
         TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder()
-                .authentication(CONFIG)
+                .authentication(config)
                 .type(TaskwarriorRequestHeader.MessageType.SYNC)
                 .build();
         TaskwarriorMessage message = taskwarriorMessage(header.toMap());
 
-        TaskwarriorMessage response = client.sendAndReceive(message);
+        TaskwarriorMessage response = clientFor(config).sendAndReceive(message);
 
         assertThat(response.getHeaders())
                 .contains(entry("code", "200"))
@@ -63,19 +71,24 @@ class TaskwarriorClientIntegrationTest {
                 .endsWith(SYNC_KEY));
     }
 
-    @Test
-    void syncWithSyncKey() {
+    @ParameterizedTest
+    @MethodSource("configs")
+    void syncWithSyncKey(TaskwarriorConfiguration config) {
         TaskwarriorRequestHeader header = taskwarriorRequestHeaderBuilder()
-                .authentication(CONFIG)
+                .authentication(config)
                 .type(TaskwarriorRequestHeader.MessageType.SYNC)
                 .build();
         TaskwarriorMessage message = taskwarriorMessage(header.toMap(), SYNC_KEY);
 
-        TaskwarriorMessage response = client.sendAndReceive(message);
+        TaskwarriorMessage response = clientFor(config).sendAndReceive(message);
 
         assertThat(response.getHeaders())
                 .contains(entry("code", "201"))
                 .contains(entry("status", "No change"));
         assertThat(response.getPayload()).hasValue(SYNC_KEY);
+    }
+
+    private TaskwarriorClient clientFor(TaskwarriorConfiguration config) {
+        return new TaskwarriorClient(config);
     }
 }

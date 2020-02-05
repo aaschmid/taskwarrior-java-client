@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.KeyStore;
 import java.security.KeyStore.PasswordProtection;
@@ -16,6 +17,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.List;
@@ -125,21 +127,22 @@ class KeyStoreBuilder {
     }
 
     private PrivateKey createPrivateKeyFor(File privateKeyFile) {
-        byte[] privateKeyBytes;
-        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(privateKeyFile))) {
-            privateKeyBytes = new byte[(int) privateKeyFile.length()];
-            int readBytes = bis.read(privateKeyBytes);
-            if (readBytes != privateKeyFile.length()) {
-                throw new TaskwarriorKeyStoreException("Failure reading content of '%s': expected %d but received %d bytes.",
-                        privateKeyFile, privateKeyBytes.length, readBytes);
-            }
+        try {
+            byte[] bytes = Files.readAllBytes(privateKeyFile.toPath());
+            return createPrivateKeyFromPkcs8Der(bytes);
         } catch (IOException e) {
             throw new TaskwarriorKeyStoreException(e, "Could not read private key of '%s' via input stream.", privateKeyFile);
         }
+    }
 
+    private PrivateKey createPrivateKeyFromPkcs8Der(byte[] privateKeyBytes) {
+        return createPrivateKey(privateKeyFile, new PKCS8EncodedKeySpec(privateKeyBytes));
+    }
+
+    private PrivateKey createPrivateKey(File privateKeyFile, KeySpec keySpec) {
         try {
             KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM_PRIVATE_KEY);
-            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
+            return keyFactory.generatePrivate(keySpec);
         } catch (NoSuchAlgorithmException e) {
             throw new TaskwarriorKeyStoreException(e, "Key factory could not be initialized for algorithm '%s'.", ALGORITHM_PRIVATE_KEY);
         } catch (InvalidKeySpecException e) {
