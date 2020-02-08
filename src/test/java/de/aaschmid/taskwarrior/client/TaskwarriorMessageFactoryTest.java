@@ -3,7 +3,6 @@ package de.aaschmid.taskwarrior.client;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,6 @@ class TaskwarriorMessageFactoryTest {
 
         byte[] actual = serialize(taskwarriorMessage(taskwarriorRequestHeader.toMap(), payload));
 
-        System.out.println(new String(Arrays.copyOfRange(actual, 4, actual.length), UTF_8)); // FIXME deterministic order?
         assertThat(actual)
                 .startsWith(0, 0, 0, actual.length)
                 .endsWith(format(
