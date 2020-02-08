@@ -53,7 +53,7 @@ dependencies {
 tasks {
     withType<JavaCompile> {
         options.encoding = "UTF-8"
-        options.compilerArgs.addAll(listOf("-Xlint:all", "-Werror", "-Xlint:-processing"))
+        options.compilerArgs.addAll(listOf("-Xlint:all", "-Werror", "-Xlint:-processing", "-XDenableSunApiLintControl"))
     }
 
     withType<Jar> {

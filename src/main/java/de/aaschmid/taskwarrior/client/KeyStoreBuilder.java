@@ -4,6 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.KeyStore;
@@ -19,9 +21,13 @@ import java.security.cert.CertificateFactory;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.RSAPrivateCrtKeySpec;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,6 +35,9 @@ class KeyStoreBuilder {
 
     private static final String TYPE_CERTIFICATE = "X.509";
     private static final String ALGORITHM_PRIVATE_KEY = "RSA";
+
+    private static final Pattern PATTERN_PKCS1_PEM = Pattern.compile("-----BEGIN RSA PRIVATE KEY-----(.*)-----END RSA PRIVATE KEY-----");
+    private static final Pattern PATTERN_PKCS8_PEM = Pattern.compile("-----BEGIN PRIVATE KEY-----(.*)-----END PRIVATE KEY-----");
 
     private ProtectionParameter keyStoreProtection;
     private File caCertFile;
@@ -62,17 +71,6 @@ class KeyStoreBuilder {
         return this;
     }
 
-    /**
-     * Provide the private key file to use. It must be in {@code *.DER} format. If you have a *.PME private key, you can create it using
-     * {@code openssl}.
-     * <p>
-     * The required command looks like following:<br>
-     * <code>$ openssl pkcs8 -topk8 -nocrypt -in key.pem -inform PEM -out key.der -outform DER</code>
-     * </p>
-     *
-     * @param privateKeyFile private key file in {@code *.DER} format (must not be {@code null}
-     * @return the {@link KeyStore} builder itself
-     */
     KeyStoreBuilder withPrivateKeyFile(File privateKeyFile) {
         requireNonNull(privateKeyFile, "'privateKeyFile' must not be null.");
         if (!privateKeyFile.exists()) {
@@ -129,10 +127,54 @@ class KeyStoreBuilder {
     private PrivateKey createPrivateKeyFor(File privateKeyFile) {
         try {
             byte[] bytes = Files.readAllBytes(privateKeyFile.toPath());
+            if (privateKeyFile.getName().endsWith("pem")) {
+                String content = new String(bytes, StandardCharsets.UTF_8).replaceAll("\\n", "");
+
+                Matcher pkcs1Matcher = PATTERN_PKCS1_PEM.matcher(content);
+                if (pkcs1Matcher.find()) {
+                    return createPrivateKeyFromPemPkcs1(pkcs1Matcher.group(1));
+                }
+
+                Matcher pkcs8Matcher = PATTERN_PKCS8_PEM.matcher(content);
+                if (pkcs8Matcher.find()) {
+                    return createPrivateKeyFromPemPkcs8(pkcs8Matcher.group(1));
+                }
+
+                throw new TaskwarriorKeyStoreException("Could not detect key algorithm for '%s'.", privateKeyFile);
+            }
             return createPrivateKeyFromPkcs8Der(bytes);
         } catch (IOException e) {
             throw new TaskwarriorKeyStoreException(e, "Could not read private key of '%s' via input stream.", privateKeyFile);
         }
+    }
+
+    @SuppressWarnings("sunapi")
+    private PrivateKey createPrivateKeyFromPemPkcs1(String privateKeyContent) throws IOException {
+        try {
+            byte[] bytes = Base64.getDecoder().decode(privateKeyContent);
+
+            sun.security.util.DerInputStream derReader = new sun.security.util.DerInputStream(bytes);
+            sun.security.util.DerValue[] seq = derReader.getSequence(0);
+            // skip version seq[0];
+            BigInteger modulus = seq[1].getBigInteger();
+            BigInteger publicExp = seq[2].getBigInteger();
+            BigInteger privateExp = seq[3].getBigInteger();
+            BigInteger prime1 = seq[4].getBigInteger();
+            BigInteger prime2 = seq[5].getBigInteger();
+            BigInteger exp1 = seq[6].getBigInteger();
+            BigInteger exp2 = seq[7].getBigInteger();
+            BigInteger crtCoef = seq[8].getBigInteger();
+
+            RSAPrivateCrtKeySpec keySpec = new RSAPrivateCrtKeySpec(modulus, publicExp, privateExp, prime1, prime2, exp1, exp2, crtCoef);
+            return createPrivateKey(privateKeyFile, keySpec);
+        } catch (Error | Exception e) {
+            throw new TaskwarriorKeyStoreException("Could not use required but proprietary 'sun.security.util' package on this platform.", e);
+        }
+    }
+
+    private PrivateKey createPrivateKeyFromPemPkcs8(String privateKeyContent) {
+        byte[] bytes = Base64.getDecoder().decode(privateKeyContent);
+        return createPrivateKey(privateKeyFile, new PKCS8EncodedKeySpec(bytes));
     }
 
     private PrivateKey createPrivateKeyFromPkcs8Der(byte[] privateKeyBytes) {
