@@ -24,7 +24,6 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
 
 import org.bouncycastle.asn1.pkcs.RSAPrivateKey;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
@@ -38,11 +37,10 @@ import static java.util.Objects.requireNonNull;
 
 class KeyStoreBuilder {
 
-    private static final String TYPE_CERTIFICATE = "X.509";
+    private static final String CERTIFICATE_TYPE = "X.509";
     private static final String KEY_ALGORITHM_RSA = "RSA";
-
-    private static final Pattern PATTERN_PKCS1_PEM = Pattern.compile("-----BEGIN RSA PRIVATE KEY-----(.*)-----END RSA PRIVATE KEY-----");
-    private static final Pattern PATTERN_PKCS8_PEM = Pattern.compile("-----BEGIN PRIVATE KEY-----(.*)-----END PRIVATE KEY-----");
+    private static final String PEM_TYPE_PKCS1 = "RSA PRIVATE KEY";
+    private static final String PEM_TYPE_PKCS8 = "PRIVATE KEY";
 
     private ProtectionParameter keyStoreProtection;
     private File caCertFile;
@@ -117,7 +115,7 @@ class KeyStoreBuilder {
     private List<Certificate> createCertificatesFor(File certFile) {
         List<Certificate> result = new ArrayList<>();
         try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(certFile))) {
-            CertificateFactory cf = CertificateFactory.getInstance(TYPE_CERTIFICATE);
+            CertificateFactory cf = CertificateFactory.getInstance(CERTIFICATE_TYPE);
             while (bis.available() > 0) {
                 result.add(cf.generateCertificate(bis));
             }
@@ -136,9 +134,9 @@ class KeyStoreBuilder {
                 PemReader pemReader = new PemReader(new InputStreamReader(new ByteArrayInputStream(bytes), StandardCharsets.UTF_8));
                 PemObject privateKeyObject = pemReader.readPemObject();
 
-                if (privateKeyObject.getType().endsWith("RSA PRIVATE KEY")) { //PKCS#1 key
+                if (privateKeyObject.getType().endsWith(PEM_TYPE_PKCS1)) {
                     return createPrivateKeyForPkcs1Bytes(privateKeyObject.getContent());
-                } else if (privateKeyObject.getType().endsWith("PRIVATE KEY")) { //PKCS#8 key
+                } else if (privateKeyObject.getType().endsWith(PEM_TYPE_PKCS8)) {
                     return createPrivateKeyForPkcs8Bytes(privateKeyObject.getContent());
                 } else {
                     throw new TaskwarriorKeyStoreException("Could not detect key algorithm for '%s'.", privateKeyFile);
