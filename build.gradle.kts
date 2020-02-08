@@ -23,7 +23,7 @@ base {
     archivesBaseName = "taskwarrior-java-client"
     description = "A Java client to communicate with a taskwarrior server (= taskd)."
     group = "de.aaschmid"
-    version = "1.0-SNAPSHOT"
+    version = "1.0"
 }
 
 java {
