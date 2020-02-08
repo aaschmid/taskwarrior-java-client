@@ -98,6 +98,7 @@ tasks {
 
     shadowJar {
         archiveClassifier.set("")
+        mergeServiceFiles()
         minimize()
         relocate("org.bouncycastle", "de.aaschmid.taskwarrior.thirdparty.org.bouncycastle")
     }
