@@ -1,11 +1,12 @@
 package de.aaschmid.taskwarrior.client;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.KeyStore;
@@ -26,8 +27,15 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.bouncycastle.asn1.pkcs.RSAPrivateKey;
+import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
+import org.bouncycastle.crypto.util.PrivateKeyFactory;
+import org.bouncycastle.crypto.util.PrivateKeyInfoFactory;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemReader;
 
 import static java.util.Objects.requireNonNull;
 
@@ -128,19 +136,55 @@ class KeyStoreBuilder {
         try {
             byte[] bytes = Files.readAllBytes(privateKeyFile.toPath());
             if (privateKeyFile.getName().endsWith("pem")) {
-                String content = new String(bytes, StandardCharsets.UTF_8).replaceAll("\\n", "");
+                String privateKeyString = "----...";
 
-                Matcher pkcs1Matcher = PATTERN_PKCS1_PEM.matcher(content);
-                if (pkcs1Matcher.find()) {
-                    return createPrivateKeyFromPemPkcs1(pkcs1Matcher.group(1));
+                PemObject privateKeyObject = null;
+                try {
+                    PemReader pemReader;
+                    pemReader = new PemReader(new InputStreamReader(new ByteArrayInputStream(bytes)));
+
+                    privateKeyObject = pemReader.readPemObject();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
-                Matcher pkcs8Matcher = PATTERN_PKCS8_PEM.matcher(content);
-                if (pkcs8Matcher.find()) {
-                    return createPrivateKeyFromPemPkcs8(pkcs8Matcher.group(1));
+                RSAPrivateCrtKeyParameters privateKeyParameter = null;
+                if (privateKeyObject.getType().endsWith("RSA PRIVATE KEY")) {
+                    //PKCS#1 key
+                    RSAPrivateKey rsa = RSAPrivateKey.getInstance(privateKeyObject.getContent());
+                    privateKeyParameter = new RSAPrivateCrtKeyParameters(
+                            rsa.getModulus(),
+                            rsa.getPublicExponent(),
+                            rsa.getPrivateExponent(),
+                            rsa.getPrime1(),
+                            rsa.getPrime2(),
+                            rsa.getExponent1(),
+                            rsa.getExponent2(),
+                            rsa.getCoefficient()
+                    );
+                } else if (privateKeyObject.getType().endsWith("PRIVATE KEY")) {
+                    //PKCS#8 key
+                    try {
+                        privateKeyParameter = (RSAPrivateCrtKeyParameters) PrivateKeyFactory.createKey(
+                                privateKeyObject.getContent()
+                        );
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    throw new TaskwarriorKeyStoreException("Could not detect key algorithm for '%s'.", privateKeyFile);
                 }
 
-                throw new TaskwarriorKeyStoreException("Could not detect key algorithm for '%s'.", privateKeyFile);
+                try {
+                    return new JcaPEMKeyConverter()
+                            .getPrivateKey(
+                                    PrivateKeyInfoFactory.createPrivateKeyInfo(
+                                            privateKeyParameter
+                                    )
+                            );
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             return createPrivateKeyFromPkcs8Der(bytes);
         } catch (IOException e) {
