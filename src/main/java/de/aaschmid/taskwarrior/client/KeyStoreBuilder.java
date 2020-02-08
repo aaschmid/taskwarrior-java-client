@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bouncycastle.asn1.pkcs.RSAPrivateKey;
-import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
 import org.bouncycastle.crypto.util.PrivateKeyInfoFactory;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
@@ -74,6 +73,10 @@ class KeyStoreBuilder {
         return this;
     }
 
+    /**
+     * Provide the non-null private key file to use. Supported are PKCS#1 and PKCS#8 keys in {@code *.PEM} format as well as PKCS#8 keys in
+     * {@code *.DER} format.
+     */
     KeyStoreBuilder withPrivateKeyFile(File privateKeyFile) {
         requireNonNull(privateKeyFile, "'privateKeyFile' must not be null.");
         if (!privateKeyFile.exists()) {
@@ -134,40 +137,41 @@ class KeyStoreBuilder {
                 PemReader pemReader = new PemReader(new InputStreamReader(new ByteArrayInputStream(bytes), StandardCharsets.UTF_8));
                 PemObject privateKeyObject = pemReader.readPemObject();
 
-                if (privateKeyObject.getType().endsWith(PEM_TYPE_PKCS1)) {
-                    return createPrivateKeyForPkcs1Bytes(privateKeyObject.getContent());
-                } else if (privateKeyObject.getType().endsWith(PEM_TYPE_PKCS8)) {
-                    return createPrivateKeyForPkcs8Bytes(privateKeyObject.getContent());
-                } else {
-                    throw new TaskwarriorKeyStoreException("Could not detect key algorithm for '%s'.", privateKeyFile);
+                switch (privateKeyObject.getType()) {
+                    case PEM_TYPE_PKCS1:
+                        return createPrivateKeyForPkcs1(privateKeyObject.getContent());
+                    case PEM_TYPE_PKCS8:
+                        return createPrivateKeyForPkcs8(privateKeyObject.getContent());
+                    default:
+                        throw new TaskwarriorKeyStoreException("Unsupported key algorithm '%s'.", privateKeyObject.getType());
                 }
             }
-            return createPrivateKeyForPkcs8Bytes(bytes);
+            return createPrivateKeyForPkcs8(bytes);
         } catch (IOException e) {
             throw new TaskwarriorKeyStoreException(e, "Could not read private key of '%s' via input stream.", privateKeyFile);
         }
     }
 
-    private PrivateKey createPrivateKeyForPkcs1Bytes(byte[] privateKeyContent) {
+    private PrivateKey createPrivateKeyForPkcs1(byte[] privateKeyBytes) {
+        RSAPrivateKey rsa = RSAPrivateKey.getInstance(privateKeyBytes);
+        RSAPrivateCrtKeyParameters keyParameters = new RSAPrivateCrtKeyParameters(
+                rsa.getModulus(),
+                rsa.getPublicExponent(),
+                rsa.getPrivateExponent(),
+                rsa.getPrime1(),
+                rsa.getPrime2(),
+                rsa.getExponent1(),
+                rsa.getExponent2(),
+                rsa.getCoefficient());
+
         try {
-            RSAPrivateKey rsa = RSAPrivateKey.getInstance(privateKeyContent);
-            AsymmetricKeyParameter privateKeyParameter = new RSAPrivateCrtKeyParameters(
-                    rsa.getModulus(),
-                    rsa.getPublicExponent(),
-                    rsa.getPrivateExponent(),
-                    rsa.getPrime1(),
-                    rsa.getPrime2(),
-                    rsa.getExponent1(),
-                    rsa.getExponent2(),
-                    rsa.getCoefficient()
-            );
-            return new JcaPEMKeyConverter().getPrivateKey(PrivateKeyInfoFactory.createPrivateKeyInfo(privateKeyParameter));
+            return new JcaPEMKeyConverter().getPrivateKey(PrivateKeyInfoFactory.createPrivateKeyInfo(keyParameters));
         } catch (IOException e) {
-            throw new TaskwarriorKeyStoreException(e, "Private key encoding failed for '%s'.", privateKeyFile);
+            throw new TaskwarriorKeyStoreException(e, "Failed to encode PKCS#1 private key of '%s'.", privateKeyFile);
         }
     }
 
-    private PrivateKey createPrivateKeyForPkcs8Bytes(byte[] privateKeyBytes) {
+    private PrivateKey createPrivateKeyForPkcs8(byte[] privateKeyBytes) {
         try {
             KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM_RSA);
             return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
