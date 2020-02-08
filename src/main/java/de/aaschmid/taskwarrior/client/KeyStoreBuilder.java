@@ -33,7 +33,6 @@ import java.util.regex.Pattern;
 import org.bouncycastle.asn1.pkcs.RSAPrivateKey;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
-import org.bouncycastle.crypto.util.PrivateKeyFactory;
 import org.bouncycastle.crypto.util.PrivateKeyInfoFactory;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.util.io.pem.PemObject;
@@ -163,12 +162,8 @@ class KeyStoreBuilder {
                             rsa.getExponent2(),
                             rsa.getCoefficient()
                     );
-                } else if (privateKeyObject.getType().endsWith("PRIVATE KEY")) { //PKCS#8 key
-                    try {
-                        privateKeyParameter = PrivateKeyFactory.createKey(privateKeyObject.getContent());
-                    } catch (IOException e) {
-                        throw new TaskwarriorKeyStoreException(e, "Cannot decode private key '%s': %s", privateKeyFile, e.getMessage());
-                    }
+                } else if (privateKeyObject.getType().endsWith("PRIVATE KEY")) {
+                    return createPrivateKeyForPkcs8Bytes(privateKeyObject.getContent());
                 } else {
                     throw new TaskwarriorKeyStoreException("Could not detect key algorithm for '%s'.", privateKeyFile);
                 }
@@ -183,7 +178,7 @@ class KeyStoreBuilder {
                             e.getMessage());
                 }
             }
-            return createPrivateKeyFromPkcs8Der(bytes);
+            return createPrivateKeyForPkcs8Bytes(bytes);
         } catch (IOException e) {
             throw new TaskwarriorKeyStoreException(e, "Could not read private key of '%s' via input stream.", privateKeyFile);
         }
@@ -215,12 +210,7 @@ class KeyStoreBuilder {
         }
     }
 
-    private PrivateKey createPrivateKeyFromPemPkcs8(String privateKeyContent) {
-        byte[] bytes = Base64.getDecoder().decode(privateKeyContent);
-        return createPrivateKey(privateKeyFile, new PKCS8EncodedKeySpec(bytes));
-    }
-
-    private PrivateKey createPrivateKeyFromPkcs8Der(byte[] privateKeyBytes) {
+    private PrivateKey createPrivateKeyForPkcs8Bytes(byte[] privateKeyBytes) {
         return createPrivateKey(privateKeyFile, new PKCS8EncodedKeySpec(privateKeyBytes));
     }
 
