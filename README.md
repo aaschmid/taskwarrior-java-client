@@ -111,10 +111,6 @@ Note: Keys can be transformed using `openssl`, e.g. from [PKCS#8]() in [PEM]() f
 openssl pkcs8 -topk8 -nocrypt -in $TASKD_GENERATED_KEY.key.pem -inform PEM -out $KEY_NAME.key.pkcs8.der -outform DER
 ```
 
-**Word of warning**: Current key parsing algorithm for [PKCS#1]() [PEM](() key uses
-`sun.security.util.DerInputStream` and `sun.security.util.DerValue` which are not part of the public interface, see
-https://www.oracle.com/java/technologies/faq-sun-packages.html for further explainations.
-
 [PKCS#1]: https://en.wikipedia.org/wiki/PKCS_1
 [PKCS#8]: https://en.wikipedia.org/wiki/PKCS_8
 [PEM]: https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail
