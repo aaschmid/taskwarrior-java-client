@@ -89,7 +89,6 @@ class Taskwarrior {
 Used `taskwarrior.properties` can be created by copying and adjusting
 [`src/main/resources/taskwarrior.properties.template`](https://github.com/aaschmid/taskwarrior-java-client/tree/master/src/main/resources/taskwarrior.properties.template).
 
-
 Testing
 -------
 
@@ -99,17 +98,28 @@ To run tests manually you will need to build and run taskwarrior server containe
 Keys formats
 ------------
 
-Unfortunately Java only has an encoded key spec for a private key in [PKCS#8](https://en.wikipedia.org/wiki/PKCS_8)
-format. However, [taskd](https://taskwarrior.org/docs/taskserver/setup.html) generates the private key in
-[PKCS#1](https://en.wikipedia.org/wiki/PKCS_1) format if you follow the
-[documentation](https://taskwarrior.org/docs/taskserver/user.html). The transformation command below also converts the
-key from [PEM](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail) to
-[DER](https://en.wikipedia.org/wiki/X.690#DER_encoding) format which does not need any further transformation as
-handling of the base64 encoded PEM keys.
+| Key specification | [PEM]() format¹ | [DER]() format |
+| ----------------- |:---------------:|:--------------:|
+| [PKCS#1]()        | yes             |                |
+| [PKCS#8]()        | yes             | yes            |
+
+¹: The kind of format is currently detected by file extentions.
+
+Note: Keys can be transformed using `openssl`, e.g. from [PKCS#8]() in [PEM]() format to [PKCS#1]() in [DER]() format:
 
 ```sh
 openssl pkcs8 -topk8 -nocrypt -in $TASKD_GENERATED_KEY.key.pem -inform PEM -out $KEY_NAME.key.pkcs8.der -outform DER
 ```
+
+**Word of warning**: Current key parsing algorithm for [PKCS#1]() [PEM](() key uses
+`sun.security.util.DerInputStream` and `sun.security.util.DerValue` which are not part of the public interface, see
+https://www.oracle.com/java/technologies/faq-sun-packages.html for further explainations.
+
+[PKCS#1]: https://en.wikipedia.org/wiki/PKCS_1
+[PKCS#8]: https://en.wikipedia.org/wiki/PKCS_8
+[PEM]: https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail
+[DER]: https://en.wikipedia.org/wiki/X.690#DER_encoding
+
 
 Release notes
 -------------
