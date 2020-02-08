@@ -148,7 +148,7 @@ class KeyStoreBuilderTest {
 
         assertThatThrownBy(builder::build)
                 .isInstanceOf(TaskwarriorKeyStoreException.class)
-                .hasMessage("Could not generate private key for '" + privateKeyFile.toAbsolutePath() + "'.")
+                .hasMessage("Invalid key spec for RSA private key in '" + privateKeyFile.toAbsolutePath() + "'.")
                 .hasCauseInstanceOf(InvalidKeySpecException.class);
     }
 

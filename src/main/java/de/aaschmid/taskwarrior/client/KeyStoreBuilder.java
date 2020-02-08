@@ -20,7 +20,6 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,7 @@ import static java.util.Objects.requireNonNull;
 class KeyStoreBuilder {
 
     private static final String TYPE_CERTIFICATE = "X.509";
-    private static final String ALGORITHM_PRIVATE_KEY = "RSA";
+    private static final String KEY_ALGORITHM_RSA = "RSA";
 
     private static final Pattern PATTERN_PKCS1_PEM = Pattern.compile("-----BEGIN RSA PRIVATE KEY-----(.*)-----END RSA PRIVATE KEY-----");
     private static final Pattern PATTERN_PKCS8_PEM = Pattern.compile("-----BEGIN PRIVATE KEY-----(.*)-----END PRIVATE KEY-----");
@@ -171,17 +170,13 @@ class KeyStoreBuilder {
     }
 
     private PrivateKey createPrivateKeyForPkcs8Bytes(byte[] privateKeyBytes) {
-        return createPrivateKey(privateKeyFile, new PKCS8EncodedKeySpec(privateKeyBytes));
-    }
-
-    private PrivateKey createPrivateKey(File privateKeyFile, KeySpec keySpec) {
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM_PRIVATE_KEY);
-            return keyFactory.generatePrivate(keySpec);
+            KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM_RSA);
+            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
         } catch (NoSuchAlgorithmException e) {
-            throw new TaskwarriorKeyStoreException(e, "Key factory could not be initialized for algorithm '%s'.", ALGORITHM_PRIVATE_KEY);
+            throw new TaskwarriorKeyStoreException(e, "Key factory could not be initialized for algorithm '%s'.", KEY_ALGORITHM_RSA);
         } catch (InvalidKeySpecException e) {
-            throw new TaskwarriorKeyStoreException(e, "Could not generate private key for '%s'.", privateKeyFile);
+            throw new TaskwarriorKeyStoreException(e, "Invalid key spec for %s private key in '%s'.", KEY_ALGORITHM_RSA, privateKeyFile);
         }
     }
 }
