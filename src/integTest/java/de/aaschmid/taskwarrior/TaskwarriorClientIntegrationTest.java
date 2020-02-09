@@ -6,7 +6,6 @@ import de.aaschmid.taskwarrior.client.TaskwarriorClient;
 import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
 import de.aaschmid.taskwarrior.message.TaskwarriorRequestHeader;
-import de.aaschmid.taskwarrior.test.IntegrationTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -17,7 +16,6 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-@IntegrationTest
 class TaskwarriorClientIntegrationTest {
 
     private static final String SYNC_KEY = "f92d5c8d-4cf9-4cf5-b72f-1f4a70cf9b20";

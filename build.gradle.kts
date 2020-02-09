@@ -38,18 +38,28 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    register("integTest") {
+        compileClasspath += tasks.jar.get().outputs.files
+        runtimeClasspath += tasks.jar.get().outputs.files
+    }
+}
+
 dependencies {
     annotationProcessor("org.immutables:value:2.8.3")
 
     listOf("com.github.spotbugs:spotbugs-annotations:3.1.12", "org.immutables:value-annotations:2.8.3").forEach {
         compileOnly(it)
         testCompileOnly(it)
+        "integTestCompileOnly"(it)
     }
 
     implementation("org.bouncycastle:bcpkix-jdk15on:1.64")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
-    testImplementation("org.assertj:assertj-core:3.14.0")
+    listOf("org.junit.jupiter:junit-jupiter:5.5.2", "org.assertj:assertj-core:3.14.0").forEach {
+        testImplementation(it)
+        "integTestImplementation"(it)
+    }
     testImplementation("org.mockito:mockito-junit-jupiter:3.2.4")
 }
 
@@ -110,22 +120,11 @@ tasks {
         useJUnitPlatform()
     }
 
-    test {
-        useJUnitPlatform {
-            excludeTags("integration-test")
-        }
-    }
-
     val integTest = register<Test>("integTest") {
-        shouldRunAfter(test)
+        classpath = sourceSets.named("integTest").get().runtimeClasspath
+        testClassesDirs = sourceSets.named("integTest").get().output.classesDirs
 
-        // run integration tests using jar file
-        classpath = jar.get().outputs.files + sourceSets.test.get().runtimeClasspath
-        testClassesDirs = sourceSets.test.get().output.classesDirs
-
-        useJUnitPlatform {
-            includeTags("integration-test")
-        }
+        useJUnitPlatform()
     }
     check { dependsOn(integTest) }
 

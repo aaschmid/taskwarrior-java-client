@@ -1,12 +1,10 @@
 package de.aaschmid.taskwarrior.message;
 
-import de.aaschmid.taskwarrior.test.IntegrationTest;
 import org.junit.jupiter.api.Test;
 
 import static de.aaschmid.taskwarrior.message.ManifestHelper.getAttributeValuesFromManifest;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@IntegrationTest
 class ManifestHelperTest {
 
     private static final String IMPL_TITLE = "Implementation-Title";
