@@ -2,6 +2,7 @@ package de.aaschmid.taskwarrior.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -47,8 +48,8 @@ public class TaskwarriorPropertiesConfiguration implements TaskwarriorConfigurat
         this.propertiesUrl = requireNonNull(propertiesUrl, "'propertiesUrl' must not be null.");
 
         this.taskwarriorProperties = new Properties();
-        try {
-            taskwarriorProperties.load(propertiesUrl.openStream());
+        try (InputStream is = propertiesUrl.openStream()) {
+            taskwarriorProperties.load(is);
         } catch (IOException e) {
             throw new TaskwarriorConfigurationException(e, "Cannot read '%s'. Check file existence and permissions.", propertiesUrl);
         }
