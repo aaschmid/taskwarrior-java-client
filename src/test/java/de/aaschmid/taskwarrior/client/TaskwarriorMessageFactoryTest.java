@@ -42,9 +42,8 @@ class TaskwarriorMessageFactoryTest {
 
         assertThat(actual)
                 .startsWith(0, 0, 0, actual.length)
-                .endsWith(format(
-                        "protocol: v1%norg: org%nclient: test v0.9%ntype: sync%nuser: user%nkey: %s%n%nThis is the expected payload.",
-                        uuid).getBytes(UTF_8));
+                .endsWith(("protocol: v1\norg: org\nclient: test v0.9\ntype: sync\nuser: user\nkey: " + uuid + "\n\nThis is the expected payload.")
+                        .getBytes(UTF_8));
     }
 
     @Test
