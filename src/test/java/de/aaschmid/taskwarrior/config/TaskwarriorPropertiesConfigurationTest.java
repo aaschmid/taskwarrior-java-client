@@ -115,7 +115,7 @@ class TaskwarriorPropertiesConfigurationTest {
     @Test
     void shouldSuccessfullyParseValidCaCert() throws Exception {
         Path caCertFile = Files.createFile(tempDir.resolve("ca.cert.pem"));
-        TaskwarriorPropertiesConfiguration config = configFor(prop(SSL_CERT_CA_FILE, caCertFile.toFile().getAbsolutePath()));
+        TaskwarriorPropertiesConfiguration config = configFor(prop(SSL_CERT_CA_FILE, caCertFile));
         assertThat(config.getCaCertFile()).isEqualTo(caCertFile.toFile());
     }
 
@@ -140,7 +140,7 @@ class TaskwarriorPropertiesConfigurationTest {
     @Test
     void shouldSuccessfullyParseValidPrivateKeyCert() throws Exception {
         Path userCertFile = Files.createFile(tempDir.resolve("user.cert.pem"));
-        TaskwarriorPropertiesConfiguration config = configFor(prop(SSL_PRIVATE_KEY_CERT_FILE, userCertFile.toFile().getAbsolutePath()));
+        TaskwarriorPropertiesConfiguration config = configFor(prop(SSL_PRIVATE_KEY_CERT_FILE, userCertFile));
         assertThat(config.getPrivateKeyCertFile()).isEqualTo(userCertFile.toFile());
     }
 
@@ -165,7 +165,7 @@ class TaskwarriorPropertiesConfigurationTest {
     @Test
     void shouldSuccessfullyParseValidPrivateKey() throws Exception {
         Path userKeyFile = Files.createFile(tempDir.resolve("user.key.pem"));
-        TaskwarriorPropertiesConfiguration config = configFor(prop(SSL_PRIVATE_KEY_FILE, userKeyFile.toFile().getAbsolutePath()));
+        TaskwarriorPropertiesConfiguration config = configFor(prop(SSL_PRIVATE_KEY_FILE, userKeyFile));
         assertThat(config.getPrivateKeyFile()).isEqualTo(userKeyFile.toFile());
     }
 
@@ -228,5 +228,13 @@ class TaskwarriorPropertiesConfigurationTest {
 
     private String prop(PropertyKey propertyKey, String value) {
         return format("%s=%s", propertyKey.key, value);
+    }
+
+    private String prop(PropertyKey propertyKey, Path value) {
+        return prop(propertyKey, toPlatformIndependentAbsolutePath(value));
+    }
+
+    private String toPlatformIndependentAbsolutePath(Path path) {
+        return path.toFile().getAbsolutePath().replaceAll("\\\\", "/");
     }
 }
