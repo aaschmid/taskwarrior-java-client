@@ -4,7 +4,10 @@ import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Arrays;
 
 import de.aaschmid.taskwarrior.config.TaskwarriorConfiguration;
 import de.aaschmid.taskwarrior.message.TaskwarriorMessage;
@@ -28,7 +31,22 @@ public class TaskwarriorClient {
     public TaskwarriorMessage sendAndReceive(TaskwarriorMessage message) {
         requireNonNull(message, "'message' must not be null.");
 
-        try (Socket socket = sslContext.getSocketFactory().createSocket(config.getServerHost(), config.getServerPort())) {
+        System.out.println(config.getServerHost());
+        try {
+            System.out.println(InetSocketAddress.createUnresolved("localhost", config.getServerPort()));
+            System.out.println(Arrays.toString(InetAddress.getAllByName("localhost")));
+            System.out.println(InetAddress.getLocalHost());
+            System.out.println(InetAddress.getLoopbackAddress());
+            System.out.println(InetAddress.getByName("localhost"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            Socket socket = sslContext.getSocketFactory().createSocket(InetAddress.getLoopbackAddress(), config.getServerPort());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try (Socket socket = sslContext.getSocketFactory().createSocket(InetAddress.getLoopbackAddress(), config.getServerPort())) {
             return sendAndReceive(socket, message);
         } catch (IOException e) {
             throw new TaskwarriorClientException(
